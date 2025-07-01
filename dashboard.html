@@ -1,0 +1,740 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dashboard - EFM Frotas</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f0f4f8; /* Light background for a clean look */
+            color: #2c3e50; /* Darker text for readability */
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased; /* Smoother font rendering */
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        /* Custom animation for dropdown fade-in */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scaleY(0.9) translateY(-10px); }
+            to { opacity: 1; transform: scaleY(1) translateY(0); }
+        }
+        .animate-fade-in {
+            animation: fadeIn 0.3s ease-out forwards;
+            transform-origin: top;
+        }
+
+        /* Custom scrollbar styling for a consistent look */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background-color: rgba(11, 61, 145, 0.6); /* Semi-transparent primary blue */
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-track {
+            background: rgba(11, 61, 145, 0.1); /* Lighter track */
+        }
+    </style>
+</head>
+<body class="overflow-x-hidden">
+
+    <header class="bg-blue-800 text-white p-4 flex flex-col md:flex-row items-center justify-between shadow-lg sticky top-0 z-50 rounded-b-xl">
+    <div class="font-extrabold text-3xl tracking-wider select-none mb-4 md:mb-0" tabindex="0">
+        <span class="text-white">EFM</span><span class="text-yellow-400"> FROTAS</span>
+    </div>
+
+    <nav class="flex flex-wrap gap-x-4 gap-y-2 items-center justify-center" role="navigation" aria-label="Menu principal">
+
+        <a href="dashboard.html" class="menu-link text-white font-semibold text-base py-2 px-2 relative whitespace-nowrap border-b-4 border-transparent hover:text-yellow-300 hover:border-yellow-300 transition">
+            Dashboard
+        </a>
+
+        <div class="relative dropdown">
+            <button onclick="toggleDropdown('menu-configuracoes', event)" class="menu-link text-white font-semibold text-base py-2 px-2 hover:text-yellow-300 hover:border-yellow-300 border-b-4 border-transparent transition">
+                Configurações <i class="ph ph-caret-down ml-1"></i>
+            </button>
+            <div id="menu-configuracoes" class="dropdown-content hidden absolute top-12 left-0 bg-white rounded-xl shadow-xl min-w-[220px] flex-col z-[9999] overflow-hidden">
+                <a href="cadastroveiculos.html" class="dropdown-item">Cadastro de Veículos</a>
+                <a href="" class="dropdown-item">Cadastro de Marcas</a>
+
+            </div>
+        </div>
+
+        <div class="relative dropdown">
+            <button onclick="toggleDropdown('menu-plano', event)" class="menu-link text-white font-semibold text-base py-2 px-2 hover:text-yellow-300 hover:border-yellow-300 border-b-4 border-transparent transition">
+                Plano de Manutenção <i class="ph ph-caret-down ml-1"></i>
+            </button>
+            <div id="menu-plano" class="dropdown-content hidden absolute top-12 left-0 bg-white rounded-xl shadow-xl min-w-[220px] flex-col z-[9999] overflow-hidden">
+                <a href="PMP.html" class="dropdown-item">PMP - Preventiva</a>
+                <a href="PL.html" class="dropdown-item">PL - Lubrificação</a>
+            </div>
+        </div>
+
+        <div class="relative dropdown">
+            <button onclick="toggleDropdown('menu-os', event)" class="menu-link text-white font-semibold text-base py-2 px-2 hover:text-yellow-300 hover:border-yellow-300 border-b-4 border-transparent transition">
+                Ordem de Serviço <i class="ph ph-caret-down ml-1"></i>
+            </button>
+            <div id="menu-os" class="dropdown-content hidden absolute top-12 left-0 bg-white rounded-xl shadow-xl min-w-[220px] flex-col z-[9999] overflow-hidden">
+                <a href="agendamento.html" class="dropdown-item">Gerar Ordem de Serviço</a>
+            </div>
+        </div>
+
+        <div class="relative dropdown">
+            <button onclick="toggleDropdown('menu-gerenciamento', event)" class="menu-link text-white font-semibold text-base py-2 px-2 hover:text-yellow-300 hover:border-yellow-300 border-b-4 border-transparent transition">
+                Gerenciamento <i class="ph ph-caret-down ml-1"></i>
+            </button>
+            <div id="menu-gerenciamento" class="dropdown-content hidden absolute top-12 left-0 bg-white rounded-xl shadow-xl min-w-[220px] flex-col z-[9999] overflow-hidden">
+                <a href="controle.html" class="dropdown-item">Controle</a>
+                <a href="index.html" class="dropdown-item">Visão Geral de Frota</a>
+            </div>
+        </div>
+
+        <a href="seguranca.html" class="menu-link text-white font-semibold text-base py-2 px-2 hover:text-yellow-300 hover:border-yellow-300 border-b-4 border-transparent transition">
+            Segurança
+        </a>
+
+        <a href="#" onclick="logout()" class="menu-link text-white font-semibold text-base py-2 px-2 hover:text-yellow-300 hover:border-yellow-300 border-b-4 border-transparent transition">
+            Sair
+        </a>
+    </nav>
+</header>
+
+<style>
+    .active-menu {
+        color: #facc15 !important; /* yellow-300 */
+        border-bottom: 4px solid #facc15 !important; /* yellow-300 */
+    }
+
+    .dropdown-item {
+        padding: 0.75rem 1.5rem;
+        color: #374151; /* gray-700 */
+        font-weight: 500;
+        white-space: nowrap;
+    }
+
+    .dropdown-item:hover {
+        background-color: #eff6ff; /* blue-50 */
+        color: #1e40af; /* blue-800 */
+    }
+</style>
+
+<script>
+    function toggleDropdown(menuId, event) {
+        event.stopPropagation();
+        document.querySelectorAll('.dropdown-content').forEach(menu => menu.classList.add('hidden'));
+        document.getElementById(menuId).classList.toggle('hidden');
+    }
+
+    document.addEventListener('click', function() {
+        document.querySelectorAll('.dropdown-content').forEach(menu => menu.classList.add('hidden'));
+    });
+
+    // Função para ativar o item de menu correto
+    function activateMenuItem() {
+        const currentPath = window.location.pathname.split('/').pop(); // Pega o nome do arquivo da URL (ex: "dashboard.html")
+
+        document.querySelectorAll('.menu-link, .dropdown-item').forEach(item => {
+            // Remove a classe 'active-menu' de todos os itens primeiro
+            item.classList.remove('active-menu');
+
+            // Pega o href do item
+            const itemHref = item.getAttribute('href');
+
+            // Verifica se o href existe e se o caminho atual corresponde ao href
+            if (itemHref && itemHref.endsWith(currentPath)) {
+                item.classList.add('active-menu');
+
+                // Se o item ativo for um dropdown-item, também queremos "ativar" o botão pai do dropdown
+                let parentDropdown = item.closest('.dropdown');
+                if (parentDropdown) {
+                    let dropdownButton = parentDropdown.querySelector('.menu-link');
+                    if (dropdownButton) {
+                        dropdownButton.classList.add('active-menu');
+                    }
+                }
+            }
+        });
+    }
+
+    // Chama a função quando a página é carregada
+    document.addEventListener('DOMContentLoaded', activateMenuItem);
+
+    // Adiciona o evento de clique para que, ao navegar, a classe 'active-menu' seja aplicada imediatamente
+    document.querySelectorAll('.menu-link, .dropdown-item').forEach(item => {
+        item.addEventListener('click', function() {
+            // Remove a classe 'active-menu' de todos os itens ao clicar em um novo item
+            document.querySelectorAll('.menu-link, .dropdown-item').forEach(i => i.classList.remove('active-menu'));
+            // Adiciona a classe 'active-menu' ao item clicado
+            this.classList.add('active-menu');
+
+            // Se o item clicado for um dropdown-item, ativa também o botão pai do dropdown
+            let parentDropdown = this.closest('.dropdown');
+            if (parentDropdown) {
+                let dropdownButton = parentDropdown.querySelector('.menu-link');
+                if (dropdownButton) {
+                    dropdownButton.classList.add('active-menu');
+                }
+            }
+        });
+    });
+// terminando header
+</script>
+
+    <div class="flex flex-col md:flex-row flex-grow overflow-hidden">
+        <aside class="md:w-72 p-6 bg-white border-r border-gray-200 overflow-y-auto shadow-md rounded-br-2xl md:rounded-tr-none md:rounded-br-none md:rounded-bl-2xl">
+            <h2 class="text-2xl font-bold text-blue-900 mb-6 flex items-center">
+                <i class="ph ph-funnel text-blue-600 text-3xl mr-3"></i> Filtros
+            </h2>
+            <div class="space-y-6">
+                <div>
+                    <label for="periodo" class="block text-md font-semibold mb-2 text-gray-700">Período:</label>
+                    <select id="periodo" class="w-full p-3 rounded-lg border border-gray-300 shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 text-lg">
+                        <option value="7d">Últimos 7 dias</option>
+                        <option value="30d">Últimos 30 dias</option>
+                        <option value="90d">Últimos 90 dias</option>
+                        <option value="180d">Últimos 180 dias</option>
+                        <option value="365d">Últimos 365 dias</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="status" class="block text-md font-semibold mb-2 text-gray-700">Status:</label>
+                    <select id="status" class="w-full p-3 rounded-lg border border-gray-300 shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 text-lg">
+                        <option value="all">Todos</option>
+                        <option value="active">Ativo</option>
+                        <option value="inactive">Inativo</option>
+                        <option value="maintenance">Em Manutenção</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="categoria" class="block text-md font-semibold mb-2 text-gray-700">Categoria:</label>
+                    <select id="categoria" class="w-full p-3 rounded-lg border border-gray-300 shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 text-lg">
+                        <option value="all">Todas</option>
+                        <option value="caminhoes">Caminhões</option>
+                        <option value="maquinas">Máquinas</option>
+                        <option value="onibus">Ônibus</option>
+                        <option value="tratores">Tratores</option>
+                        <option value="vans">Vans</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-md font-semibold mb-2 text-gray-700">Data Personalizada:</label>
+                    <div class="mt-1 flex flex-col gap-3">
+                        <input type="date" id="dataInicio" class="w-full p-3 rounded-lg border border-gray-300 shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 text-lg">
+                        <input type="date" id="dataFim" class="w-full p-3 rounded-lg border border-gray-300 shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 text-lg">
+                    </div>
+                </div>
+                <div class="flex justify-center mt-6">
+                    <button onclick="aplicarFiltros()" class="w-full bg-blue-600 text-white font-bold text-lg py-3 px-6 rounded-lg hover:bg-blue-700 transition-colors duration-300 shadow-md flex items-center justify-center">
+                        <i class="ph ph-magnifying-glass text-xl mr-2"></i> Aplicar Filtros
+                    </button>
+                </div>
+            </div>
+        </aside>
+
+        <main class="flex-1 p-6 md:p-8 space-y-8 overflow-y-auto">
+            <h1 class="font-extrabold text-5xl mb-4 text-center text-blue-900 tracking-wide select-none">Dashboard EFM Frotas</h1>
+            <p class="text-lg text-gray-700 mb-8 text-center">Visão geral e análises do seu gerenciamento de frotas.</p>
+
+            <p id="ultimaAtualizacao" class="text-md text-right text-gray-600 flex items-center justify-end">
+                <i class="ph ph-clock text-blue-500 text-xl mr-2"></i> Última atualização: <span class="font-semibold ml-1">Carregando...</span>
+            </p>
+
+            <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-8" aria-label="Indicadores Chave de Performance">
+                <div class="p-6 rounded-2xl bg-gradient-to-br from-blue-600 to-blue-800 text-white shadow-xl flex flex-col justify-between transform hover:scale-105 transition-transform duration-300 ease-in-out">
+                    <div class="flex items-center justify-between mb-3">
+                        <p class="text-lg font-medium">Custo Total</p>
+                        <i class="ph ph-currency-dollar text-4xl opacity-75"></i>
+                    </div>
+                    <h2 id="kpiFaturamento" class="text-4xl font-extrabold">R$ 0</h2>
+                    <p class="text-sm opacity-90 mt-2">Gasto bruto no período</p>
+                </div>
+
+                <div class="p-6 rounded-2xl bg-gradient-to-br from-gray-600 to-gray-800 text-white shadow-xl flex flex-col justify-between transform hover:scale-105 transition-transform duration-300 ease-in-out">
+                    <div class="flex items-center justify-between mb-3">
+                        <p class="text-lg font-medium">Ordens de Serviço (OS)</p>
+                        <i class="ph ph-clipboard-text text-4xl opacity-75"></i>
+                    </div>
+                    <h2 id="kpiPedidos" class="text-4xl font-extrabold">0</h2>
+                    <p class="text-sm opacity-90 mt-2">Total de OS geradas</p>
+                </div>
+
+                <div class="p-6 rounded-2xl bg-gradient-to-br from-green-500 to-green-700 text-white shadow-xl flex flex-col justify-between transform hover:scale-105 transition-transform duration-300 ease-in-out">
+                    <div class="flex items-center justify-between mb-3">
+                        <p class="text-lg font-medium">Veículos Ativos</p>
+                        <i class="ph ph-truck text-4xl opacity-75"></i>
+                    </div>
+                    <h2 id="kpiVeiculosAtivos" class="text-4xl font-extrabold">0</h2>
+                    <p class="text-sm opacity-90 mt-2">Caminhões e máquinas operacionais</p>
+                </div>
+
+                <div class="p-6 rounded-2xl bg-gradient-to-br from-red-500 to-red-700 text-white shadow-xl flex flex-col justify-between transform hover:scale-105 transition-transform duration-300 ease-in-out">
+                    <div class="flex items-center justify-between mb-3">
+                        <p class="text-lg font-medium">Manutenções Pendentes</p>
+                        <i class="ph ph-warning-octagon text-4xl opacity-75"></i>
+                    </div>
+                    <h2 id="kpiManutencoesPendentes" class="text-4xl font-extrabold">0</h2>
+                    <p class="text-sm opacity-90 mt-2">Manutenções agendadas ou atrasadas</p>
+                </div>
+            </section>
+
+            <div class="text-right mb-8">
+                <button onclick="atualizarDashboard()" class="bg-blue-800 text-white font-bold text-lg py-3 px-8 rounded-lg hover:bg-blue-700 transition-colors duration-300 shadow-md">
+                    <i class="ph ph-arrow-counter-clockwise text-xl mr-2"></i> Atualizar Dados
+                </button>
+            </div>
+
+            <section class="grid grid-cols-1 lg:grid-cols-2 gap-8" aria-label="Gráficos de Desempenho">
+                <div class="bg-white p-6 rounded-3xl shadow-lg border border-gray-100 flex flex-col items-center justify-center">
+                    <h3 class="text-2xl font-bold text-blue-900 mb-6 flex items-center">
+                        <i class="ph ph-chart-line text-blue-600 text-3xl mr-3"></i> Faturamento Mensal
+                    </h3>
+                    <div class="w-full h-80 flex items-center justify-center"> <canvas id="graficoFaturamento" class="max-w-full max-h-full"></canvas>
+                    </div>
+                </div>
+
+                <div class="bg-white p-6 rounded-3xl shadow-lg border border-gray-100 flex flex-col items-center justify-center">
+                    <h3 class="text-2xl font-bold text-blue-900 mb-6 flex items-center">
+                        <i class="ph ph-chart-pie text-blue-600 text-3xl mr-3"></i> Frotas por Tipo
+                    </h3>
+                    <div class="w-full h-80 flex items-center justify-center"> <canvas id="graficoCategorias" class="max-w-full max-h-full"></canvas>
+                    </div>
+                </div>
+
+                <div class="lg:col-span-2 bg-white p-6 rounded-3xl shadow-lg border border-gray-100 flex flex-col items-center justify-center">
+                    <div class="flex flex-col sm:flex-row justify-between items-center w-full mb-6">
+                        <h3 class="text-2xl font-bold text-blue-900 flex items-center mb-4 sm:mb-0">
+                            <i class="ph ph-chart-bar text-blue-600 text-3xl mr-3"></i> Análise de Custos
+                        </h3>
+                        <select id="personalizado" class="p-3 border border-gray-300 rounded-lg text-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200">
+                            <option value="gastos">Gastos</option>
+                            <option value="investimentos">Investimentos</option>
+                        </select>
+                    </div>
+                    <div class="w-full h-96 flex items-center justify-center"> <canvas id="graficoPersonalizado" class="max-w-full max-h-full"></canvas>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script>
+        // --- SEGURANÇA DE LOGIN ---
+        // Redireciona para a página de login se o usuário não estiver 'logado'.
+        if (localStorage.getItem('logado') !== 'true') {
+            if (typeof __app_id === 'undefined') {
+                window.location.href = 'login.html';
+            } else {
+                console.log("Running in Canvas environment, bypassing login redirect.");
+                localStorage.setItem('logado', 'true');
+            }
+        }
+
+        // Função para realizar logout.
+        function logout() {
+            localStorage.removeItem('logado');
+            if (typeof __app_id === 'undefined') {
+                window.location.href = 'login.html';
+            } else {
+                console.log("Running in Canvas environment, logout simulated.");
+            }
+        }
+
+        // --- FUNCIONALIDADE DE DROPDOWN MENUS ---
+        function toggleDropdown(id, event) {
+            event.preventDefault();
+            event.stopPropagation();
+
+            const menu = document.getElementById(id);
+            const isVisible = menu.style.display === 'flex';
+
+            document.querySelectorAll('.dropdown-content').forEach(m => {
+                if (m !== menu) {
+                    m.style.display = 'none';
+                    if (m.previousElementSibling) {
+                        m.previousElementSibling.setAttribute('aria-expanded', 'false');
+                        m.classList.remove('animate-fade-in');
+                    }
+                }
+            });
+
+            if (!isVisible) {
+                menu.style.display = 'flex';
+                menu.style.flexDirection = 'column';
+                menu.classList.add('animate-fade-in');
+                if (menu.previousElementSibling) {
+                    menu.previousElementSibling.setAttribute('aria-expanded', 'true');
+                }
+            } else {
+                menu.style.display = 'none';
+                menu.classList.remove('animate-fade-in');
+                if (menu.previousElementSibling) {
+                    menu.previousElementSibling.setAttribute('aria-expanded', 'false');
+                }
+            }
+        }
+
+        document.addEventListener('click', (event) => {
+            const isClickInsideDropdown = event.target.closest('.dropdown');
+            if (!isClickInsideDropdown) {
+                document.querySelectorAll('.dropdown-content').forEach(menu => {
+                    if (menu.style.display === 'flex') {
+                        menu.style.display = 'none';
+                        menu.classList.remove('animate-fade-in');
+                        if (menu.previousElementSibling) {
+                            menu.previousElementSibling.setAttribute('aria-expanded', 'false');
+                        }
+                    }
+                });
+            }
+        });
+
+        // --- LÓGICA DO DASHBOARD ---
+        // Variáveis globais para os gráficos
+        let chartFaturamento, chartCategorias, chartPersonalizado;
+
+        // Função para atualizar a data e hora da última atualização
+        function atualizarData() {
+            const agora = new Date();
+            const formatada = agora.toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'short' });
+            document.getElementById('ultimaAtualizacao').querySelector('span').textContent = formatada;
+        }
+
+        /**
+         * Função para buscar e atualizar os KPIs.
+         * Esta função deve ser modificada para buscar dados do seu banco de dados.
+         * @param {string} periodo - O período selecionado (ex: '7d', '30d', 'personalizado').
+         * @param {string} status - O status selecionado (ex: 'all', 'active', 'maintenance').
+         * @param {string} categoria - A categoria selecionada (ex: 'all', 'caminhoes', 'maquinas').
+         * @param {string} dataInicio - Data de início para o período personalizado (YYYY-MM-DD).
+         * @param {string} dataFim - Data de fim para o período personalizado (YYYY-MM-DD).
+         */
+        async function atualizarKPIs(periodo, status, categoria, dataInicio, dataFim) {
+            // Exemplo de como você faria uma requisição a uma API para buscar os dados:
+            // const response = await fetch(`/api/kpis?periodo=${periodo}&status=${status}&categoria=${categoria}&dataInicio=${dataInicio}&dataFim=${dataFim}`);
+            // const data = await response.json();
+
+            // Dados de exemplo (REMOVER ESTES DADOS FIXOS AO INTEGRAR COM O BANCO DE DADOS)
+            const dadosExemplo = {
+                faturamento: Math.floor(Math.random() * 200000) + 50000,
+                pedidos: Math.floor(Math.random() * 1000) + 100,
+                veiculosAtivos: Math.floor(Math.random() * 500) + 50,
+                manutencoesPendentes: Math.floor(Math.random() * 30) + 1
+            };
+            const data = dadosExemplo; // Substitua por 'data' da sua API
+
+            document.getElementById('kpiFaturamento').textContent = `R$ ${data.faturamento.toLocaleString('pt-BR')}`;
+            document.getElementById('kpiPedidos').textContent = data.pedidos;
+            document.getElementById('kpiVeiculosAtivos').textContent = data.veiculosAtivos;
+            document.getElementById('kpiManutencoesPendentes').textContent = data.manutencoesPendentes;
+        }
+
+        /**
+         * Função para buscar e atualizar os dados do gráfico de faturamento.
+         * @param {string} periodo - O período selecionado.
+         * @param {string} status - O status selecionado.
+         * @param {string} categoria - A categoria selecionada.
+         * @param {string} dataInicio - Data de início para o período personalizado.
+         * @param {string} dataFim - Data de fim para o período personalizado.
+         */
+        async function atualizarGraficoFaturamento(periodo, status, categoria, dataInicio, dataFim) {
+            // TODO: Integrar com a API para buscar dados reais de faturamento
+            // Ex: const response = await fetch(`/api/faturamento?periodo=${periodo}&status=${status}&categoria=${categoria}&dataInicio=${dataInicio}&dataFim=${dataFim}`);
+            // const dadosFaturamento = await response.json();
+
+            // Dados de exemplo (REMOVER ESTES DADOS FIXOS)
+            const labels = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun'];
+            const data = [
+                Math.floor(Math.random() * 10000) + 10000,
+                Math.floor(Math.random() * 10000) + 15000,
+                Math.floor(Math.random() * 10000) + 13000,
+                Math.floor(Math.random() * 10000) + 17000,
+                Math.floor(Math.random() * 10000) + 20000,
+                Math.floor(Math.random() * 10000) + 22000
+            ];
+
+            chartFaturamento.data.labels = labels;
+            chartFaturamento.data.datasets[0].data = data;
+            chartFaturamento.update();
+        }
+
+        /**
+         * Função para buscar e atualizar os dados do gráfico de categorias.
+         * @param {string} periodo - O período selecionado.
+         * @param {string} status - O status selecionado.
+         * @param {string} categoria - A categoria selecionada.
+         * @param {string} dataInicio - Data de início para o período personalizado.
+         * @param {string} dataFim - Data de fim para o período personalizado.
+         */
+        async function atualizarGraficoCategorias(periodo, status, categoria, dataInicio, dataFim) {
+            // TODO: Integrar com a API para buscar dados reais de categorias
+            // Ex: const response = await fetch(`/api/categorias?periodo=${periodo}&status=${status}&categoria=${categoria}&dataInicio=${dataInicio}&dataFim=${dataFim}`);
+            // const dadosCategorias = await response.json();
+
+            // Dados de exemplo (REMOVER ESTES DADOS FIXOS)
+            const data = [
+                Math.floor(Math.random() * 40) + 40, // Caminhões
+                Math.floor(Math.random() * 15) + 10, // Máquinas
+                Math.floor(Math.random() * 10) + 5,  // Ônibus
+                Math.floor(Math.random() * 10) + 5,  // Tratores
+                Math.floor(Math.random() * 8) + 3    // Vans
+            ];
+
+            chartCategorias.data.datasets[0].data = data;
+            chartCategorias.update();
+        }
+
+        /**
+         * Função para buscar e atualizar os dados do gráfico personalizado (Análise de Custos).
+         * @param {string} tipo - O tipo de dado selecionado ('gastos', 'investimentos').
+         * @param {string} periodo - O período selecionado.
+         * @param {string} status - O status selecionado.
+         * @param {string} categoria - A categoria selecionada.
+         * @param {string} dataInicio - Data de início para o período personalizado.
+         * @param {string} dataFim - Data de fim para o período personalizado.
+         */
+        async function atualizarGraficoPersonalizado(tipo, periodo, status, categoria, dataInicio, dataFim) {
+            // TODO: Integrar com a API para buscar dados reais para o gráfico personalizado
+            // Ex: const response = await fetch(`/api/custos?tipo=${tipo}&periodo=${periodo}&status=${status}&categoria=${categoria}&dataInicio=${dataInicio}&dataFim=${dataFim}`);
+            // const dadosPersonalizados = await response.json();
+
+            let labels = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun'];
+            let data = [];
+            let label = '';
+            let backgroundColor = '';
+            let borderColor = '';
+
+            // Dados de exemplo baseados no tipo selecionado (REMOVER ESTES DADOS FIXOS)
+            if (tipo === 'gastos') {
+                data = [
+                    Math.floor(Math.random() * 2000) + 3000,
+                    Math.floor(Math.random() * 2000) + 4000,
+                    Math.floor(Math.random() * 2000) + 3500,
+                    Math.floor(Math.random() * 2000) + 4500,
+                    Math.floor(Math.random() * 2000) + 5000,
+                    Math.floor(Math.random() * 2000) + 5500
+                ];
+                label = 'Gastos (R$)';
+                backgroundColor = '#3b82f6'; // blue-500
+                borderColor = '#2563eb'; // blue-600
+            } else if (tipo === 'investimentos') {
+                data = [
+                    Math.floor(Math.random() * 1000) + 1000,
+                    Math.floor(Math.random() * 1000) + 1500,
+                    Math.floor(Math.random() * 1000) + 1200,
+                    Math.floor(Math.random() * 1000) + 1800,
+                    Math.floor(Math.random() * 1000) + 2000,
+                    Math.floor(Math.random() * 1000) + 2200
+                ];
+                label = 'Investimentos (R$)';
+                backgroundColor = '#3b82f6'; // blue-500
+                borderColor = '#2563eb'; // blue-600
+            }
+
+            chartPersonalizado.data.labels = labels;
+            chartPersonalizado.data.datasets[0].label = label;
+            chartPersonalizado.data.datasets[0].data = data;
+            chartPersonalizado.data.datasets[0].backgroundColor = backgroundColor;
+            chartPersonalizado.data.datasets[0].borderColor = borderColor;
+            chartPersonalizado.update();
+        }
+
+        // Função para aplicar todos os filtros e atualizar o dashboard
+        function aplicarFiltros() {
+            const periodo = document.getElementById('periodo').value;
+            const status = document.getElementById('status').value;
+            const categoria = document.getElementById('categoria').value;
+            const dataInicio = document.getElementById('dataInicio').value;
+            const dataFim = document.getElementById('dataFim').value;
+            const tipoPersonalizado = document.getElementById('personalizado').value;
+
+            // Atualiza os KPIs com os filtros selecionados
+            atualizarKPIs(periodo, status, categoria, dataInicio, dataFim);
+            // Atualiza os gráficos com os filtros selecionados
+            atualizarGraficoFaturamento(periodo, status, categoria, dataInicio, dataFim);
+            atualizarGraficoCategorias(periodo, status, categoria, dataInicio, dataFim);
+            atualizarGraficoPersonalizado(tipoPersonalizado, periodo, status, categoria, dataInicio, dataFim);
+            atualizarData(); // Atualiza o timestamp da última atualização
+            console.log('✅ Dashboard atualizado com os filtros aplicados!');
+        }
+
+        // Event Listeners para os filtros da sidebar
+        document.getElementById('periodo').addEventListener('change', aplicarFiltros);
+        document.getElementById('status').addEventListener('change', aplicarFiltros);
+        document.getElementById('categoria').addEventListener('change', aplicarFiltros);
+        document.getElementById('dataInicio').addEventListener('change', aplicarFiltros);
+        document.getElementById('dataFim').addEventListener('change', aplicarFiltros);
+        document.getElementById('personalizado').addEventListener('change', aplicarFiltros); // Para o gráfico de análise de custos
+
+        // Função principal para atualizar o dashboard (chamada pelo botão e on load)
+        function atualizarDashboard() {
+            aplicarFiltros(); // Chama a função que já agrupa todas as atualizações
+        }
+
+        // --- INICIALIZAÇÃO DOS GRÁFICOS (Chart.js) ---
+        // Os gráficos são inicializados uma vez, e seus dados são atualizados pelas funções acima.
+        document.addEventListener('DOMContentLoaded', () => {
+            const ctxFaturamento = document.getElementById('graficoFaturamento').getContext('2d');
+            chartFaturamento = new Chart(ctxFaturamento, {
+                type: 'line',
+                data: {
+                    labels: [], // Serão preenchidos via BD
+                    datasets: [{
+                        label: 'Faturamento (R$)',
+                        data: [], // Serão preenchidos via BD
+                        backgroundColor: 'rgba(59, 130, 246, 0.2)',
+                        borderColor: '#3b82f6',
+                        borderWidth: 3,
+                        pointBackgroundColor: '#3b82f6',
+                        pointBorderColor: '#fff',
+                        pointHoverRadius: 6,
+                        pointHoverBackgroundColor: '#3b82f6',
+                        pointHoverBorderColor: '#fff',
+                        tension: 0.4,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: true,
+                            position: 'top',
+                            labels: {
+                                font: { family: 'Poppins', size: 14, weight: '500' },
+                                color: '#4b5563'
+                            }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    let label = context.dataset.label || '';
+                                    if (label) label += ': ';
+                                    if (context.parsed.y !== null) label += new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(context.parsed.y);
+                                    return label;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            grid: { display: false },
+                            ticks: { font: { family: 'Poppins', size: 12 }, color: '#4b5563' }
+                        },
+                        y: {
+                            beginAtZero: true,
+                            grid: { color: '#e2e8f0' },
+                            ticks: {
+                                callback: function(value) { return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL', maximumFractionDigits: 0 }).format(value); },
+                                font: { family: 'Poppins', size: 12 },
+                                color: '#4b5563'
+                            }
+                        }
+                    }
+                }
+            });
+
+            const ctxCategorias = document.getElementById('graficoCategorias').getContext('2d');
+            chartCategorias = new Chart(ctxCategorias, {
+                type: 'doughnut',
+                data: {
+                    // Labels atualizados - "Outros" removido
+                    labels: ['Caminhões', 'Máquinas', 'Ônibus', 'Tratores', 'Vans'], 
+                    datasets: [{
+                        // Cores atualizadas para corresponder aos novos labels
+                        backgroundColor: ['#3b82f6', '#64748b', '#22c55e', '#ef4444', '#f59e0b'], 
+                        data: [], // Serão preenchidos via BD
+                        hoverOffset: 8,
+                        borderWidth: 2,
+                        borderColor: '#ffffff'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: { font: { family: 'Poppins', size: 14, weight: '500' }, color: '#4b5563' }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    let label = context.label || '';
+                                    if (label) label += ': ';
+                                    if (context.parsed !== null) label += context.parsed; 
+                                    return label;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+            const ctxPersonalizado = document.getElementById('graficoPersonalizado').getContext('2d');
+            chartPersonalizado = new Chart(ctxPersonalizado, {
+                type: 'bar',
+                data: {
+                    labels: [], // Serão preenchidos via BD
+                    datasets: [{
+                        label: 'Gastos (R$)', // Rótulo inicial, será atualizado pela função
+                        data: [], // Serão preenchidos via BD
+                        backgroundColor: '#3b82f6', // Cor azul
+                        borderColor: '#2563eb',   // Cor azul mais escura
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                            labels: { font: { family: 'Poppins', size: 14, weight: '500' }, color: '#4b5563' }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    let label = context.dataset.label || '';
+                                    if (label) label += ': ';
+                                    if (context.parsed.y !== null) label += new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(context.parsed.y);
+                                    return label;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            grid: { display: false },
+                            ticks: { font: { family: 'Poppins', size: 12 }, color: '#4b5563' }
+                        },
+                        y: {
+                            beginAtZero: true,
+                            grid: { color: '#e2e8f0' },
+                            ticks: {
+                                callback: function(value) { return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL', maximumFractionDigits: 0 }).format(value); },
+                                font: { family: 'Poppins', size: 12 },
+                                color: '#4b5563'
+                            }
+                        }
+                    }
+                }
+            });
+
+            // Chama a função de atualização inicial para carregar os dados (mesmo que vazios)
+            // e garantir que os elementos estejam prontos para receber dados do BD.
+            atualizarDashboard();
+        });
+    </script>
+</body>
+</html>

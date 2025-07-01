@@ -1,0 +1,857 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Cadastro de Veículos - EFM Frotas</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <link rel="stylesheet" href="css/maquinas.css"> 
+
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f0f4f8; /* Light background for a clean look */
+            color: #2c3e50; /* Darker text for readability */
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased; /* Smoother font rendering */
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        /* Estilos específicos do Header e Dropdown */
+        .active-menu {
+            color: #facc15 !important; /* yellow-300 */
+            border-bottom: 4px solid #facc15 !important; /* yellow-300 */
+        }
+
+        .dropdown-item {
+            padding: 0.75rem 1.5rem;
+            color: #374151; /* gray-700 */
+            font-weight: 500;
+            white-space: nowrap;
+        }
+
+        .dropdown-item:hover {
+            background-color: #eff6ff; /* blue-50 */
+            color: #1e40af; /* blue-800 */
+        }
+
+        /* Animação para feedback (geral, pode ser usada em outras partes) */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fade-in {
+            animation: fadeIn 0.5s ease-out forwards;
+        }
+
+        /* Custom scrollbar styling for a consistent look */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background-color: rgba(11, 61, 145, 0.6); /* Semi-transparent primary blue */
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-track {
+            background: rgba(11, 61, 145, 0.1); /* Lighter track */
+        }
+    </style>
+
+    <script>
+        // --- SEGURANÇA DE LOGIN (mantendo a lógica global) ---
+        if (localStorage.getItem('logado') !== 'true') {
+            if (typeof __app_id === 'undefined') {
+                window.location.href = 'login.html';
+            } else {
+                console.log("Running in Canvas environment, bypassing login redirect.");
+                localStorage.setItem('logado', 'true');
+            }
+        }
+
+        function logout() {
+            localStorage.removeItem('logado');
+            if (typeof __app_id === 'undefined') {
+                window.location.href = 'login.html';
+            } else {
+                console.log("Running in Canvas environment, logout simulated.");
+            }
+        }
+
+        // --- FUNCIONALIDADE DE DROPDOWN MENUS ---
+        function toggleDropdown(id, event) {
+            event.preventDefault();
+            event.stopPropagation(); // Impede que o clique se propague para o document e feche imediatamente
+
+            const menu = document.getElementById(id);
+            const isVisible = menu.style.display === 'flex'; // Verifica se já está visível
+
+            // Fecha todos os outros dropdowns
+            document.querySelectorAll('.dropdown-content').forEach(m => {
+                if (m !== menu) { // Evita fechar o próprio menu que está sendo alternado
+                    m.style.display = 'none';
+                    if (m.previousElementSibling) {
+                        m.previousElementSibling.setAttribute('aria-expanded', 'false');
+                    }
+                    m.classList.remove('animate-fade-in'); // Remove a classe de animação ao fechar
+                }
+            });
+
+            // Alterna a visibilidade do menu clicado
+            if (!isVisible) {
+                menu.style.display = 'flex';
+                menu.style.flexDirection = 'column'; // Garante que os itens fiquem em coluna
+                menu.classList.add('animate-fade-in'); // Adiciona a animação ao abrir
+                if (menu.previousElementSibling) {
+                    menu.previousElementSibling.setAttribute('aria-expanded', 'true');
+                }
+            } else {
+                menu.style.display = 'none';
+                menu.classList.remove('animate-fade-in'); // Remove a animação ao fechar
+                if (menu.previousElementSibling) {
+                    menu.previousElementSibling.setAttribute('aria-expanded', 'false');
+                }
+            }
+        }
+
+        // Fecha dropdowns ao clicar fora
+        document.addEventListener('click', (event) => {
+            const isClickInsideDropdown = event.target.closest('.dropdown');
+            if (!isClickInsideDropdown) {
+                document.querySelectorAll('.dropdown-content').forEach(menu => {
+                    if (menu.style.display === 'flex') {
+                        menu.style.display = 'none';
+                        menu.classList.remove('animate-fade-in');
+                        if (menu.previousElementSibling) {
+                            menu.previousElementSibling.setAttribute('aria-expanded', 'false');
+                        }
+                    }
+                });
+            }
+        });
+
+        // Função para ativar o item de menu correto
+        function activateMenuItem() {
+            const currentPath = window.location.pathname.split('/').pop();
+
+            document.querySelectorAll('.menu-link, .dropdown-item').forEach(item => {
+                item.classList.remove('active-menu');
+
+                const itemHref = item.getAttribute('href');
+
+                if (itemHref && itemHref.endsWith(currentPath)) {
+                    item.classList.add('active-menu');
+
+                    let parentDropdown = item.closest('.dropdown');
+                    if (parentDropdown) {
+                        let dropdownButton = parentDropdown.querySelector('.menu-link');
+                        if (dropdownButton) {
+                            dropdownButton.classList.add('active-menu');
+                        }
+                    }
+                }
+            });
+        }
+
+        // Chama a função quando a página é carregada
+        document.addEventListener('DOMContentLoaded', activateMenuItem);
+
+        // Adiciona o evento de clique para que, ao navegar, a classe 'active-menu' seja aplicada imediatamente
+        document.querySelectorAll('.menu-link, .dropdown-item').forEach(item => {
+            item.addEventListener('click', function() {
+                document.querySelectorAll('.menu-link, .dropdown-item').forEach(i => i.classList.remove('active-menu'));
+                this.classList.add('active-menu');
+
+                let parentDropdown = this.closest('.dropdown');
+                if (parentDropdown) {
+                    let dropdownButton = parentDropdown.querySelector('.menu-link');
+                    if (dropdownButton) {
+                        dropdownButton.classList.add('active-menu');
+                    }
+                }
+            });
+        });
+    </script>
+</head>
+<body class="bg-gray-100 overflow-x-hidden">
+
+<header class="bg-blue-800 text-white p-4 flex flex-col md:flex-row items-center justify-between shadow-lg sticky top-0 z-50 rounded-b-xl">
+    <div class="font-extrabold text-3xl tracking-wider select-none mb-4 md:mb-0" tabindex="0">
+        <span class="text-white">EFM</span><span class="text-yellow-400"> FROTAS</span>
+    </div>
+
+    <nav class="flex flex-wrap gap-x-4 gap-y-2 items-center justify-center" role="navigation" aria-label="Menu principal">
+
+        <a href="dashboard.html" class="menu-link text-white font-semibold text-base py-2 px-2 relative whitespace-nowrap border-b-4 border-transparent hover:text-yellow-300 hover:border-yellow-300 transition">
+            Dashboard
+        </a>
+
+        <div class="relative dropdown">
+            <button onclick="toggleDropdown('menu-configuracoes', event)" class="menu-link text-white font-semibold text-base py-2 px-2 hover:text-yellow-300 hover:border-yellow-300 border-b-4 border-transparent transition">
+                Configurações <i class="ph ph-caret-down ml-1"></i>
+            </button>
+            <div id="menu-configuracoes" class="dropdown-content hidden absolute top-12 left-0 bg-white rounded-xl shadow-xl min-w-[220px] flex-col z-[9999] overflow-hidden">
+                <a href="cadastroveiculos.html" class="dropdown-item">Cadastro de Veículos</a>
+                <a href="cadastro_marcas.html" class="dropdown-item">Cadastro de Marcas</a>
+            </div>
+        </div>
+
+        <div class="relative dropdown">
+            <button onclick="toggleDropdown('menu-plano', event)" class="menu-link text-white font-semibold text-base py-2 px-2 hover:text-yellow-300 hover:border-yellow-300 border-b-4 border-transparent transition">
+                Plano de Manutenção <i class="ph ph-caret-down ml-1"></i>
+            </button>
+            <div id="menu-plano" class="dropdown-content hidden absolute top-12 left-0 bg-white rounded-xl shadow-xl min-w-[220px] flex-col z-[9999] overflow-hidden">
+                <a href="PMP.html" class="dropdown-item">PMP - Preventiva</a>
+                <a href="PL.html" class="dropdown-item">PL - Lubrificação</a>
+            </div>
+        </div>
+
+        <div class="relative dropdown">
+            <button onclick="toggleDropdown('menu-os', event)" class="menu-link text-white font-semibold text-base py-2 px-2 hover:text-yellow-300 hover:border-yellow-300 border-b-4 border-transparent transition">
+                Ordem de Serviço <i class="ph ph-caret-down ml-1"></i>
+            </button>
+            <div id="menu-os" class="dropdown-content hidden absolute top-12 left-0 bg-white rounded-xl shadow-xl min-w-[220px] flex-col z-[9999] overflow-hidden">
+                <a href="agendamento.html" class="dropdown-item">Gerar Ordem de Serviço</a>
+            </div>
+        </div>
+
+        <div class="relative dropdown">
+            <button onclick="toggleDropdown('menu-gerenciamento', event)" class="menu-link text-white font-semibold text-base py-2 px-2 hover:text-yellow-300 hover:border-yellow-300 border-b-4 border-transparent transition">
+                Gerenciamento <i class="ph ph-caret-down ml-1"></i>
+            </button>
+            <div id="menu-gerenciamento" class="dropdown-content hidden absolute top-12 left-0 bg-white rounded-xl shadow-xl min-w-[220px] flex-col z-[9999] overflow-hidden">
+                <a href="controle.html" class="dropdown-item">Controle</a>
+                <a href="index.html" class="dropdown-item">Visão Geral de Frota</a>
+            </div>
+        </div>
+
+        <a href="seguranca.html" class="menu-link text-white font-semibold text-base py-2 px-2 hover:text-yellow-300 hover:border-yellow-300 border-b-4 border-transparent transition">
+            Segurança
+        </a>
+
+        <a href="#" onclick="logout()" class="menu-link text-white font-semibold text-base py-2 px-2 hover:text-yellow-300 hover:border-yellow-300 border-b-4 border-transparent transition">
+            Sair
+        </a>
+    </nav>
+</header>
+    
+<main class="max-w-7xl mx-auto my-12 px-4 md:px-6">
+    <h1 class="font-extrabold text-5xl mb-10 text-center text-blue-900 tracking-wide select-none">Cadastro de Veículos</h1>
+    
+    <section class="bg-white p-6 md:p-8 rounded-3xl shadow-lg mb-12" aria-label="Formulário de Cadastro de Veículos">
+        <h2 class="text-2xl font-bold text-blue-900 mb-6">Adicionar Novo Veículo</h2>
+        <form id="vehicleForm" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            
+            <div>
+                <label for="nome" class="block font-semibold mb-2 text-gray-700">Nome/Nº Frota:</label>
+                <input type="text" id="nome" placeholder="Ex: Caminhão 101" required class="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-blue-500" />
+            </div>
+            <div>
+                <label for="marca" class="block font-semibold mb-2 text-gray-700">Marca:</label>
+                <select id="marca" required class="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-blue-500">
+                    <option value="">Selecione a Marca</option>
+                    </select>
+            </div>
+            <div>
+                <label for="modelo" class="block font-semibold mb-2 text-gray-700">Modelo:</label>
+                <input type="text" id="modelo" placeholder="Ex: FH 540" required class="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-blue-500" />
+            </div>
+
+            <div>
+                <label for="tipoVeiculo" class="block font-semibold mb-2 text-gray-700">Tipo de Veículo:</label>
+                <select id="tipoVeiculo" required class="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-blue-500">
+                    <option value="">Selecione o Tipo</option>
+                    <option value="Carro">Carro</option>
+                    <option value="Caminhao">Caminhão</option>
+                    <option value="Maquina">Máquina</option>
+                    <option value="Onibus">Ônibus</option>
+                    <option value="Carreta">Carreta</option>
+                    <option value="Implemento Agrícola">Implemento Agrícola</option>
+                    <option value="Van">Van</option>
+                </select>
+            </div>
+            <div>
+                <label for="combustivel" class="block font-semibold mb-2 text-gray-700">Combustível:</label>
+                <select id="combustivel" required class="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-blue-500">
+                    <option value="">Selecione o Combustível</option>
+                    <option value="Gasolina">Gasolina</option>
+                    <option value="Diesel">Diesel</option>
+                    <option value="Etanol">Etanol</option>
+                    <option value="Flex">Flex</option>
+                    <option value="Elétrico">Elétrico</option>
+                </select>
+            </div>
+            <div>
+                <label for="placa" class="block font-semibold mb-2 text-gray-700">Placa:</label>
+                <input type="text" id="placa" placeholder="ABC-1234" required class="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-blue-500" />
+            </div>
+
+            <div>
+                <label for="ano" class="block font-semibold mb-2 text-gray-700">Ano:</label>
+                <input
+                    type="number"
+                    id="ano"
+                    placeholder="Apenas números"
+                    required
+                    class="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-blue-500"
+                    min="1990"
+                    max="2026"
+                />
+            </div>
+            <div>
+                <label for="km" class="block font-semibold mb-2 text-gray-700">Quilometragem (KM):</label>
+                <input type="number" id="km" placeholder="Apenas números" class="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-blue-500" />
+            </div>
+            <div>
+                <label for="HR" class="block font-semibold mb-2 text-gray-700">Horímetro (HR):</label>
+                <input type="number" id="HR" placeholder="Apenas números" class="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-blue-500" />
+            </div>
+
+            <div>
+                <label for="status" class="block font-semibold mb-2 text-gray-700">Status:</label>
+                <select id="status" required class="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-blue-500">
+                    <option value="Ativo">Ativo</option>
+                    <option value="Inativo">Inativo</option>
+                </select>
+            </div>
+            <div>
+                <label for="necessitaPMP" class="block font-semibold mb-2 text-gray-700">Necessita de PMP?</label>
+                <select id="necessitaPMP" required class="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-blue-500">
+                    <option value="Sim">Sim</option>
+                    <option value="Não">Não</option>
+                </select>
+            </div>
+            <div>
+                <label for="necessitaPL" class="block font-semibold mb-2 text-gray-700">Necessita de PL?</label>
+                <select id="necessitaPL" required class="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-blue-500">
+                    <option value="Sim">Sim</option>
+                    <option value="Não">Não</option>
+                </select>
+            </div>
+            
+            <div class="lg:col-span-3">
+                <label for="observacoes" class="block font-semibold mb-2 text-gray-700">Observações:</label>
+                <textarea id="observacoes" placeholder="Informações adicionais" rows="3" class="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-blue-500"></textarea>
+            </div>
+
+            <div class="md:col-span-2 lg:col-span-3 flex justify-center mt-6">
+                <button type="submit" class="bg-blue-800 text-white font-bold text-lg py-3 px-8 rounded-lg hover:bg-blue-700 transition-colors duration-300 shadow-md">
+                    Adicionar Veículo
+                </button>
+            </div>
+        </form>
+    </section>
+
+    <section class="bg-white p-6 md:p-8 rounded-3xl shadow-lg" aria-label="Tabela de Veículos Cadastrados">
+        <h2 class="text-2xl font-bold text-blue-900 mb-6">Veículos Cadastrados</h2>
+        <div class="overflow-x-auto rounded-lg">
+            <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-gray-50">
+                    <tr>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nome</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Marca</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Modelo</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tipo</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Combustível</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Placa</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Ano</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Leitura</th> 
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Manutenção</th> <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">PMP</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">PL</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Observações</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Ações</th>
+                    </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-gray-200" id="vehiclesTableBody">
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <div id="userFeedback" class="hidden"></div>
+
+    <div id="editVehicleModal" class="fixed inset-0 bg-gray-800 bg-opacity-60 hidden items-center justify-center z-[1000] p-4">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-4xl max-h-[90vh] flex flex-col" role="dialog" aria-modal="true" aria-labelledby="editModalTitle">
+            <div class="flex justify-between items-center p-5 border-b border-gray-200">
+                <h3 id="editModalTitle" class="text-2xl font-bold text-blue-900">Editar Veículo</h3>
+                <button onclick="closeEditModal()" class="text-gray-400 hover:text-red-600 transition-colors p-1 rounded-full" aria-label="Fechar modal">
+                    <i class="ph ph-x-circle text-3xl"></i>
+                </button>
+            </div>
+            <div class="overflow-y-auto p-8">
+                <form id="editVehicleForm">
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <div>
+                            <label for="edit-nome" class="block font-semibold mb-2">Nome/Nº Frota:</label>
+                            <input type="text" id="edit-nome" required class="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-blue-500" />
+                        </div>
+                        <div>
+                            <label for="edit-marca" class="block font-semibold mb-2">Marca:</label>
+                            <select id="edit-marca" required class="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-blue-500">
+                                <option value="">Selecione a Marca</option>
+                                </select>
+                        </div>
+                        <div>
+                            <label for="edit-modelo" class="block font-semibold mb-2">Modelo:</label>
+                            <input type="text" id="edit-modelo" required class="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-blue-500" />
+                        </div>
+                        <div>
+                            <label for="edit-tipoVeiculo" class="block font-semibold mb-2">Tipo de Veículo:</label>
+                            <select id="edit-tipoVeiculo" required class="w-full border border-gray-300 rounded-lg p-3">
+                                <option value="Carro">Carro</option>
+                                <option value="Caminhao">Caminhão</option>
+                                <option value="Maquina">Máquina</option>
+                                <option value="Onibus">Ônibus</option>
+                                <option value="Carreta">Carreta</option>
+                                <option value="Implemento Agrícola">Implemento Agrícola</option>
+                                <option value="Van">Van</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="edit-combustivel" class="block font-semibold mb-2">Combustível:</label>
+                            <select id="edit-combustivel" required class="w-full border border-gray-300 rounded-lg p-3">
+                                <option value="Gasolina">Gasolina</option>
+                                <option value="Diesel">Diesel</option>
+                                <option value="Etanol">Etanol</option>
+                                <option value="Flex">Flex</option>
+                                <option value="Elétrico">Elétrico</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="edit-placa" class="block font-semibold mb-2">Placa:</label>
+                            <input type="text" id="edit-placa" required class="w-full border border-gray-300 rounded-lg p-3" />
+                        </div>
+                        <div>
+                            <label for="edit-ano" class="block font-semibold mb-2">Ano:</label>
+                            <input type="number" id="edit-ano" required class="w-full border border-gray-300 rounded-lg p-3" />
+                        </div>
+                        <div>
+                            <label for="edit-km" class="block font-semibold mb-2">Quilometragem (KM):</label>
+                            <input type="number" id="edit-km" class="w-full border border-gray-300 rounded-lg p-3" />
+                        </div>
+                        <div>
+                            <label for="edit-horimetro" class="block font-semibold mb-2">Horímetro (HR):</label>
+                            <input type="number" id="edit-horimetro" class="w-full border border-gray-300 rounded-lg p-3" />
+                        </div>
+                        <div>
+                            <label for="edit-status" class="block font-semibold mb-2">Status:</label>
+                            <select id="edit-status" required class="w-full border border-gray-300 rounded-lg p-3">
+                                <option value="Ativo">Ativo</option>
+                                <option value="Em Manutencao">Em Manutenção</option>
+                                <option value="Inativo">Inativo</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="edit-necessitaPMP" class="block font-semibold mb-2">Necessita de PMP?</label>
+                            <select id="edit-necessitaPMP" required class="w-full border border-gray-300 rounded-lg p-3">
+                                <option value="Sim">Sim</option>
+                                <option value="Não">Não</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="edit-necessitaPL" class="block font-semibold mb-2">Necessita de PL?</label>
+                            <select id="edit-necessitaPL" required class="w-full border border-gray-300 rounded-lg p-3">
+                                <option value="Sim">Sim</option>
+                                <option value="Não">Não</option>
+                            </select>
+                        </div>
+                        <div class="lg:col-span-3">
+                            <label for="edit-observacoes" class="block font-semibold mb-2">Observações:</label>
+                            <textarea id="edit-observacoes" rows="3" class="w-full border border-gray-300 rounded-lg p-3"></textarea>
+                        </div>
+                    </div>
+                    <div class="flex justify-end items-center gap-4 mt-8 pt-5 border-t border-gray-200">
+                        <button type="button" onclick="closeEditModal()" class="bg-gray-200 text-gray-800 font-bold py-2 px-6 rounded-lg hover:bg-gray-300 transition-colors">Cancelar</button>
+                        <button type="submit" class="bg-blue-800 text-white font-bold py-2 px-6 rounded-lg hover:bg-blue-700 transition-colors">Salvar Alterações</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div id="confirmModal" class="fixed inset-0 bg-gray-800 bg-opacity-60 hidden items-center justify-center z-[1000] p-4">
+        <div class="bg-white rounded-lg shadow-xl p-6 w-full max-w-sm">
+            <h3 id="confirmModalTitle" class="text-xl font-bold text-gray-800 mb-4">Confirmar Ação</h3>
+            <p id="confirmModalMessage" class="text-gray-600 mb-6">Você tem certeza?</p>
+            <div class="flex justify-end gap-4">
+                <button id="confirmModalNo" class="bg-gray-200 text-gray-800 font-bold py-2 px-4 rounded-lg">Não</button>
+                <button id="confirmModalYes" class="bg-red-600 text-white font-bold py-2 px-4 rounded-lg">Sim, Excluir</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="modalManutencao" class="fixed inset-0 bg-gray-800 bg-opacity-60 hidden items-center justify-center z-[1000] p-4">
+        <div class="bg-white rounded-lg shadow-xl p-6 w-full max-w-md text-center">
+            <h3 class="text-xl font-bold text-gray-800 mb-4">Ação de Manutenção</h3>
+            <p class="text-gray-600 mb-6">O que você deseja fazer para este veículo?</p>
+            <div class="flex flex-col gap-4">
+                <button onclick="agendarManutencao()" class="bg-blue-600 text-white font-bold py-3 px-4 rounded-lg hover:bg-blue-700 w-full">Agendar Ordem de Serviço</button>
+                <button onclick="closeModal()" class="bg-gray-200 text-gray-800 font-bold py-3 px-4 rounded-lg hover:bg-gray-300 w-full">Cancelar</button>
+            </div>
+        </div>
+    </div>
+</main>
+
+<script>
+    // Variáveis globais
+    let vehicles = [];
+    let editingVehicleId = null; // Armazena o ID do veículo sendo editado
+    let currentVehicleIdForMaintenance = null;
+    let registeredBrands = []; // Nova variável para armazenar as marcas cadastradas
+
+    // --- Funções de Utilitários ---
+
+    function generateUniqueId() {
+        // Garante que o ID seja sempre único e sequencial, mesmo após recarregar.
+        // Se não houver veículos, começa em 1. Caso contrário, pega o maior ID existente e adiciona 1.
+        return vehicles.length > 0 ? Math.max(...vehicles.map(v => v.id)) + 1 : 1;
+    }
+
+    function saveVehicles() {
+        localStorage.setItem('vehicles', JSON.stringify(vehicles));
+    }
+
+    function loadVehicles() {
+        const storedVehicles = localStorage.getItem('vehicles');
+        if (storedVehicles) {
+            vehicles = JSON.parse(storedVehicles);
+            renderVehiclesTable();
+        }
+    }
+
+    function showUserFeedback(message, isSuccess = true) {
+        const feedbackDiv = document.getElementById('userFeedback');
+        feedbackDiv.textContent = message;
+        feedbackDiv.className = `fixed top-20 right-4 px-4 py-2 rounded-lg shadow-lg z-[1001] animate-fade-in ${isSuccess ? 'bg-green-500 text-white' : 'bg-red-500 text-white'}`;
+        feedbackDiv.classList.remove('hidden');
+
+        setTimeout(() => {
+            feedbackDiv.classList.add('hidden');
+            feedbackDiv.classList.remove('animate-fade-in');
+        }, 3000);
+    }
+
+    // --- Nova Função: Carregar e Popular Marcas ---
+    function loadBrands() {
+        const storedBrands = localStorage.getItem('brands'); // Assumindo que 'brands' é onde as marcas são salvas
+        if (storedBrands) {
+            registeredBrands = JSON.parse(storedBrands);
+        } else {
+            registeredBrands = []; // Garante que seja um array vazio se não houver marcas
+        }
+        
+        // Popular o select de marca no formulário de adição
+        const marcaSelect = document.getElementById('marca');
+        marcaSelect.innerHTML = '<option value="">Selecione a Marca</option>'; // Opção padrão
+        registeredBrands.forEach(brand => {
+            const option = document.createElement('option');
+            option.value = brand.name; // Usar o nome da marca como valor
+            option.textContent = brand.name;
+            marcaSelect.appendChild(option);
+        });
+
+        // Popular o select de marca no modal de edição (quando o modal for aberto, ele será preenchido novamente)
+        const editMarcaSelect = document.getElementById('edit-marca');
+        editMarcaSelect.innerHTML = '<option value="">Selecione a Marca</option>'; // Opção padrão
+        registeredBrands.forEach(brand => {
+            const option = document.createElement('option');
+            option.value = brand.name;
+            option.textContent = brand.name;
+            editMarcaSelect.appendChild(option);
+        });
+    }
+
+    // --- Funções da Tabela e Formulário Principal ---
+
+    function renderVehiclesTable() {
+        const tableBody = document.getElementById('vehiclesTableBody');
+        tableBody.innerHTML = ''; // Limpa o corpo da tabela antes de renderizar
+
+        vehicles.forEach(vehicle => {
+            const row = tableBody.insertRow();
+            row.className = 'hover:bg-gray-50 transition-colors duration-150 text-sm text-gray-700';
+
+            row.insertCell().textContent = vehicle.id;
+            row.insertCell().textContent = vehicle.nome;
+            row.insertCell().textContent = vehicle.marca;
+            row.insertCell().textContent = vehicle.modelo;
+            row.insertCell().textContent = vehicle.tipoVeiculo;
+            row.insertCell().textContent = vehicle.combustivel;
+            row.insertCell().textContent = vehicle.placa;
+            row.insertCell().textContent = vehicle.ano;
+
+            const kmHorimetroCell = row.insertCell();
+            let leituraText = [];
+            if (vehicle.km) leituraText.push(`${vehicle.km} KM`);
+            if (vehicle.horimetro) leituraText.push(`${vehicle.horimetro} HR`);
+            kmHorimetroCell.textContent = leituraText.length > 0 ? leituraText.join(' / ') : '-';
+
+            // Botão de Ações de Manutenção (agora um ícone)
+            const maintenanceCell = row.insertCell();
+            const maintenanceButton = document.createElement('button');
+            maintenanceButton.innerHTML = '<i class="ph ph-wrench text-xl"></i>'; // Ícone de chave inglesa
+            maintenanceButton.className = `font-bold py-1 px-3 rounded-full text-xs shadow-sm transition-all duration-200 
+                                            ${vehicle.necessitaManutencao ? 'bg-red-500 text-white hover:bg-red-600' : 'bg-blue-500 text-white hover:bg-blue-600'}`;
+            maintenanceButton.title = 'Ações de Manutenção';
+            maintenanceButton.onclick = () => showMaintenanceModal(vehicle.id);
+            maintenanceCell.appendChild(maintenanceButton);
+
+            const statusCell = row.insertCell();
+            const statusSpan = document.createElement('span');
+            statusSpan.textContent = vehicle.status;
+            statusSpan.className = `font-bold py-1 px-3 rounded-full text-xs ${
+                vehicle.status === 'Ativo' ? 'bg-green-100 text-green-800' :
+                vehicle.status === 'Em Manutencao' ? 'bg-orange-100 text-orange-800' :
+                'bg-red-100 text-red-800'
+            }`;
+            statusCell.appendChild(statusSpan);
+
+            // Novos campos PMP e PL na tabela
+            row.insertCell().textContent = vehicle.necessitaPMP || 'Não'; // Garante que exiba 'Não' se for undefined
+            row.insertCell().textContent = vehicle.necessitaPL || 'Não';   // Garante que exiba 'Não' se for undefined
+
+            row.insertCell().textContent = vehicle.observacoes || '-';
+
+            const actionsCell = row.insertCell();
+            actionsCell.className = 'flex gap-2 items-center px-6 py-4';
+
+            const editButton = document.createElement('button');
+            editButton.innerHTML = '<i class="ph ph-pencil-simple text-xl"></i>';
+            editButton.className = 'text-blue-600 hover:text-blue-800 p-2 rounded-full hover:bg-blue-50';
+            editButton.title = 'Editar Veículo';
+            editButton.onclick = () => openEditModal(vehicle.id);
+            actionsCell.appendChild(editButton);
+
+            const deleteButton = document.createElement('button');
+            deleteButton.innerHTML = '<i class="ph ph-trash text-xl"></i>';
+            deleteButton.className = 'text-red-600 hover:text-red-800 p-2 rounded-full hover:bg-red-50';
+            deleteButton.title = 'Excluir Veículo';
+            deleteButton.onclick = () => confirmDeleteVehicle(vehicle.id);
+            actionsCell.appendChild(deleteButton);
+        });
+    }
+
+    function handleAddVehicle(event) {
+        event.preventDefault(); // Impede o recarregamento da página
+
+        const nome = document.getElementById('nome').value.trim();
+        const marca = document.getElementById('marca').value; // Agora pega o valor do select
+        const modelo = document.getElementById('modelo').value.trim();
+        const tipoVeiculo = document.getElementById('tipoVeiculo').value;
+        const combustivel = document.getElementById('combustivel').value;
+        const placa = document.getElementById('placa').value.trim().toUpperCase();
+        const ano = parseInt(document.getElementById('ano').value);
+        // Converte KM e HR para number, ou null se estiverem vazios
+        const km = document.getElementById('km').value !== '' ? parseFloat(document.getElementById('km').value) : null;
+        const horimetro = document.getElementById('HR').value !== '' ? parseFloat(document.getElementById('HR').value) : null;
+        const status = document.getElementById('status').value;
+        const observacoes = document.getElementById('observacoes').value.trim();
+        const necessitaPMP = document.getElementById('necessitaPMP').value;
+        const necessitaPL = document.getElementById('necessitaPL').value;
+
+
+        // Validação básica
+        if (!nome || !marca || !modelo || !tipoVeiculo || !combustivel || !placa || !ano || !status) {
+            showUserFeedback('Por favor, preencha todos os campos obrigatórios.', false);
+            return;
+        }
+
+        if (km === null && horimetro === null) {
+            showUserFeedback('Preencha a Quilometragem (KM) ou o Horímetro (HR).', false);
+            return;
+        }
+
+        const newVehicle = {
+            id: generateUniqueId(),
+            nome,
+            marca,
+            modelo,
+            tipoVeiculo,
+            combustivel,
+            placa,
+            ano,
+            km,
+            horimetro,
+            status,
+            observacoes,
+            necessitaManutencao: false, // Pode ser ajustado com base na lógica de PMP/PL se desejar
+            necessitaPMP,
+            necessitaPL
+        };
+        vehicles.push(newVehicle);
+        showUserFeedback('Veículo adicionado com sucesso!');
+
+        saveVehicles();           // Salva no localStorage
+        renderVehiclesTable();    // Atualiza a tabela
+        document.getElementById('vehicleForm').reset(); // Limpa o formulário
+    }
+
+    // --- Funções do MODAL DE EDIÇÃO ---
+
+    function openEditModal(id) {
+        const vehicle = vehicles.find(v => v.id === id);
+        if (!vehicle) return;
+
+        editingVehicleId = id; // Define o ID do veículo que está sendo editado
+
+        // Popula as opções da marca no modal de edição a cada abertura
+        const editMarcaSelect = document.getElementById('edit-marca');
+        editMarcaSelect.innerHTML = '<option value="">Selecione a Marca</option>'; // Limpa e adiciona padrão
+        registeredBrands.forEach(brand => {
+            const option = document.createElement('option');
+            option.value = brand.name;
+            option.textContent = brand.name;
+            editMarcaSelect.appendChild(option);
+        });
+
+        // Preenche os campos do formulário de edição com os dados do veículo
+        document.getElementById('edit-nome').value = vehicle.nome;
+        document.getElementById('edit-marca').value = vehicle.marca; // Atribui o valor da marca
+        document.getElementById('edit-modelo').value = vehicle.modelo;
+        document.getElementById('edit-tipoVeiculo').value = vehicle.tipoVeiculo;
+        document.getElementById('edit-combustivel').value = vehicle.combustivel;
+        document.getElementById('edit-placa').value = vehicle.placa;
+        document.getElementById('edit-ano').value = vehicle.ano;
+        document.getElementById('edit-km').value = vehicle.km || ''; // Se km for null, define como string vazia
+        document.getElementById('edit-horimetro').value = vehicle.horimetro || ''; // Se horimetro for null, define como string vazia
+        document.getElementById('edit-status').value = vehicle.status;
+        document.getElementById('edit-observacoes').value = vehicle.observacoes || '';
+        document.getElementById('edit-necessitaPMP').value = vehicle.necessitaPMP || 'Não';
+        document.getElementById('edit-necessitaPL').value = vehicle.necessitaPL || 'Não';
+
+
+        const modal = document.getElementById('editVehicleModal');
+        modal.classList.remove('hidden');
+        modal.classList.add('flex'); // Torna o modal visível
+    }
+
+    function closeEditModal() {
+        const modal = document.getElementById('editVehicleModal');
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+        editingVehicleId = null; // Limpa o ID do veículo em edição
+    }
+
+    function handleEditFormSubmit(event) {
+        event.preventDefault();
+        if (editingVehicleId === null) return; // Se não houver veículo em edição, sai da função
+
+        // Coleta os valores atualizados do formulário de edição
+        const updatedVehicle = {
+            nome: document.getElementById('edit-nome').value.trim(),
+            marca: document.getElementById('edit-marca').value, // Pega o valor do select
+            modelo: document.getElementById('edit-modelo').value.trim(),
+            tipoVeiculo: document.getElementById('edit-tipoVeiculo').value,
+            combustivel: document.getElementById('edit-combustivel').value,
+            placa: document.getElementById('edit-placa').value.trim().toUpperCase(),
+            ano: parseInt(document.getElementById('edit-ano').value),
+            km: document.getElementById('edit-km').value !== '' ? parseFloat(document.getElementById('edit-km').value) : null,
+            horimetro: document.getElementById('edit-horimetro').value !== '' ? parseFloat(document.getElementById('edit-horimetro').value) : null,
+            status: document.getElementById('edit-status').value,
+            observacoes: document.getElementById('edit-observacoes').value.trim(),
+            necessitaPMP: document.getElementById('edit-necessitaPMP').value,
+            necessitaPL: document.getElementById('edit-necessitaPL').value
+        };
+
+        // Encontra o índice do veículo no array e o atualiza
+        const vehicleIndex = vehicles.findIndex(v => v.id === editingVehicleId);
+        if (vehicleIndex !== -1) {
+            vehicles[vehicleIndex] = {
+                ...vehicles[vehicleIndex], // Mantém quaisquer outras propriedades existentes (ex: necessitaManutencao)
+                ...updatedVehicle          // Sobrescreve com os dados atualizados
+            };
+            showUserFeedback('Veículo atualizado com sucesso!');
+            saveVehicles();         // Salva as alterações
+            renderVehiclesTable();  // Renderiza a tabela novamente
+            closeEditModal();       // Fecha o modal de edição
+        }
+    }
+
+    // --- Funções de Exclusão e Confirmação ---
+
+    function openConfirmModal(title, message, onConfirm) {
+        document.getElementById('confirmModalTitle').textContent = title;
+        document.getElementById('confirmModalMessage').textContent = message;
+        document.getElementById('confirmModal').classList.remove('hidden');
+        document.getElementById('confirmModal').classList.add('flex');
+
+        const confirmYesBtn = document.getElementById('confirmModalYes');
+        // Clona e substitui o botão para remover listeners anteriores
+        confirmYesBtn.replaceWith(confirmYesBtn.cloneNode(true));
+        document.getElementById('confirmModalYes').addEventListener('click', () => {
+            onConfirm();
+            closeConfirmModal();
+        });
+        document.getElementById('confirmModalNo').addEventListener('click', closeConfirmModal); // Garante que o botão 'Não' feche o modal
+    }
+
+    function closeConfirmModal() {
+        document.getElementById('confirmModal').classList.add('hidden');
+        document.getElementById('confirmModal').classList.remove('flex');
+    }
+
+    function confirmDeleteVehicle(id) {
+        openConfirmModal(
+            'Confirmar Exclusão',
+            'Tem certeza que deseja excluir este veículo? Esta ação é irreversível.',
+            () => deleteVehicle(id)
+        );
+    }
+
+    function deleteVehicle(id) {
+        vehicles = vehicles.filter(v => v.id !== id); // Filtra o veículo a ser excluído
+        saveVehicles();
+        renderVehiclesTable();
+        showUserFeedback('Veículo excluído com sucesso!');
+    }
+
+    // --- Funções do Modal de Manutenção ---
+
+    function showMaintenanceModal(vehicleId) {
+        currentVehicleIdForMaintenance = vehicleId;
+        const modal = document.getElementById('modalManutencao');
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+    }
+
+    function closeModal() {
+        const modal = document.getElementById('modalManutencao');
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+        currentVehicleIdForMaintenance = null;
+    }
+
+    function agendarManutencao() {
+        if (currentVehicleIdForMaintenance) {
+            const vehicleIndex = vehicles.findIndex(v => v.id === currentVehicleIdForMaintenance);
+            if (vehicleIndex !== -1) {
+                // Ao agendar manutenção, podemos opcionalmente mudar o status do veículo
+                vehicles[vehicleIndex].status = 'Em Manutencao';
+                vehicles[vehicleIndex].necessitaManutencao = true; // Define como necessitando manutenção
+                saveVehicles();
+                renderVehiclesTable(); // Atualiza a tabela para refletir a mudança de status
+            }
+            // Redireciona para a página de agendamento, passando o ID do veículo
+            window.location.href = `agendamento.html?vehicleId=${currentVehicleIdForMaintenance}`;
+        }
+    }
+
+
+    // --- Inicialização ---
+    document.addEventListener('DOMContentLoaded', () => {
+        loadBrands(); // Carrega as marcas disponíveis ao carregar a página
+        loadVehicles(); // Carrega os veículos ao iniciar a página
+        document.getElementById('vehicleForm').addEventListener('submit', handleAddVehicle);
+        document.getElementById('editVehicleForm').addEventListener('submit', handleEditFormSubmit);
+    });
+</script>
+
+</body>
+</html>

@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Agendamento e O.S. - EFM Frotas</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="css/maquinas.css">
+</head>
+<body class="overflow-x-hidden bg-gray-100 min-h-screen flex flex-col">
+ 
+   <header class="bg-blue-800 text-white p-4 flex flex-col md:flex-row items-center justify-between shadow-lg sticky top-0 z-50 rounded-b-xl">
+    <div class="font-extrabold text-3xl tracking-wider select-none mb-4 md:mb-0" tabindex="0">
+        <span class="text-white">EFM</span><span class="text-yellow-400"> FROTAS</span>
+    </div>
+
+    <nav class="flex flex-wrap gap-x-4 gap-y-2 items-center justify-center" role="navigation" aria-label="Menu principal">
+
+        <a href="dashboard.html" class="menu-link text-white font-semibold text-base py-2 px-2 relative whitespace-nowrap border-b-4 border-transparent hover:text-yellow-300 hover:border-yellow-300 transition">
+            Dashboard
+        </a>
+
+        <div class="relative dropdown">
+            <button onclick="toggleDropdown('menu-configuracoes', event)" class="menu-link text-white font-semibold text-base py-2 px-2 hover:text-yellow-300 hover:border-yellow-300 border-b-4 border-transparent transition">
+                Configurações <i class="ph ph-caret-down ml-1"></i>
+            </button>
+            <div id="menu-configuracoes" class="dropdown-content hidden absolute top-12 left-0 bg-white rounded-xl shadow-xl min-w-[220px] flex-col z-[9999] overflow-hidden">
+                <a href="CadastroVeiculos.html" class="dropdown-item">Cadastro de Veículos</a>
+                <a href="" class="dropdown-item">Cadastro de Marcas</a>
+
+            </div>
+        </div>
+
+        <div class="relative dropdown">
+            <button onclick="toggleDropdown('menu-plano', event)" class="menu-link text-white font-semibold text-base py-2 px-2 hover:text-yellow-300 hover:border-yellow-300 border-b-4 border-transparent transition">
+                Plano de Manutenção <i class="ph ph-caret-down ml-1"></i>
+            </button>
+            <div id="menu-plano" class="dropdown-content hidden absolute top-12 left-0 bg-white rounded-xl shadow-xl min-w-[220px] flex-col z-[9999] overflow-hidden">
+                <a href="PMP.html" class="dropdown-item">PMP - Preventiva</a>
+                <a href="PL.html" class="dropdown-item">PL - Lubrificação</a>
+            </div>
+        </div>
+
+        <div class="relative dropdown">
+            <button onclick="toggleDropdown('menu-os', event)" class="menu-link text-white font-semibold text-base py-2 px-2 hover:text-yellow-300 hover:border-yellow-300 border-b-4 border-transparent transition">
+                Ordem de Serviço <i class="ph ph-caret-down ml-1"></i>
+            </button>
+            <div id="menu-os" class="dropdown-content hidden absolute top-12 left-0 bg-white rounded-xl shadow-xl min-w-[220px] flex-col z-[9999] overflow-hidden">
+                <a href="agendamento.html" class="dropdown-item">Gerar Ordem de Serviço</a>
+            </div>
+        </div>
+
+        <div class="relative dropdown">
+            <button onclick="toggleDropdown('menu-gerenciamento', event)" class="menu-link text-white font-semibold text-base py-2 px-2 hover:text-yellow-300 hover:border-yellow-300 border-b-4 border-transparent transition">
+                Gerenciamento <i class="ph ph-caret-down ml-1"></i>
+            </button>
+            <div id="menu-gerenciamento" class="dropdown-content hidden absolute top-12 left-0 bg-white rounded-xl shadow-xl min-w-[220px] flex-col z-[9999] overflow-hidden">
+                <a href="controle.html" class="dropdown-item">Controle</a>
+                <a href="index.html" class="dropdown-item">Visão Geral de Frota</a>
+            </div>
+        </div>
+
+        <a href="seguranca.html" class="menu-link text-white font-semibold text-base py-2 px-2 hover:text-yellow-300 hover:border-yellow-300 border-b-4 border-transparent transition">
+            Segurança
+        </a>
+
+        <a href="#" onclick="logout()" class="menu-link text-white font-semibold text-base py-2 px-2 hover:text-yellow-300 hover:border-yellow-300 border-b-4 border-transparent transition">
+            Sair
+        </a>
+    </nav>
+</header>
+
+<style>
+    .active-menu {
+        color: #facc15 !important; /* yellow-300 */
+        border-bottom: 4px solid #facc15 !important; /* yellow-300 */
+    }
+
+    .dropdown-item {
+        padding: 0.75rem 1.5rem;
+        color: #374151; /* gray-700 */
+        font-weight: 500;
+        white-space: nowrap;
+    }
+
+    .dropdown-item:hover {
+        background-color: #eff6ff; /* blue-50 */
+        color: #1e40af; /* blue-800 */
+    }
+</style>
+
+<script>
+    function toggleDropdown(menuId, event) {
+        event.stopPropagation();
+        document.querySelectorAll('.dropdown-content').forEach(menu => menu.classList.add('hidden'));
+        document.getElementById(menuId).classList.toggle('hidden');
+    }
+
+    document.addEventListener('click', function() {
+        document.querySelectorAll('.dropdown-content').forEach(menu => menu.classList.add('hidden'));
+    });
+
+    // Função para ativar o item de menu correto
+    function activateMenuItem() {
+        const currentPath = window.location.pathname.split('/').pop(); // Pega o nome do arquivo da URL (ex: "dashboard.html")
+
+        document.querySelectorAll('.menu-link, .dropdown-item').forEach(item => {
+            // Remove a classe 'active-menu' de todos os itens primeiro
+            item.classList.remove('active-menu');
+
+            // Pega o href do item
+            const itemHref = item.getAttribute('href');
+
+            // Verifica se o href existe e se o caminho atual corresponde ao href
+            if (itemHref && itemHref.endsWith(currentPath)) {
+                item.classList.add('active-menu');
+
+                // Se o item ativo for um dropdown-item, também queremos "ativar" o botão pai do dropdown
+                let parentDropdown = item.closest('.dropdown');
+                if (parentDropdown) {
+                    let dropdownButton = parentDropdown.querySelector('.menu-link');
+                    if (dropdownButton) {
+                        dropdownButton.classList.add('active-menu');
+                    }
+                }
+            }
+        });
+    }
+
+    // Chama a função quando a página é carregada
+    document.addEventListener('DOMContentLoaded', activateMenuItem);
+
+    // Adiciona o evento de clique para que, ao navegar, a classe 'active-menu' seja aplicada imediatamente
+    document.querySelectorAll('.menu-link, .dropdown-item').forEach(item => {
+        item.addEventListener('click', function() {
+            // Remove a classe 'active-menu' de todos os itens ao clicar em um novo item
+            document.querySelectorAll('.menu-link, .dropdown-item').forEach(i => i.classList.remove('active-menu'));
+            // Adiciona a classe 'active-menu' ao item clicado
+            this.classList.add('active-menu');
+
+            // Se o item clicado for um dropdown-item, ativa também o botão pai do dropdown
+            let parentDropdown = this.closest('.dropdown');
+            if (parentDropdown) {
+                let dropdownButton = parentDropdown.querySelector('.menu-link');
+                if (dropdownButton) {
+                    dropdownButton.classList.add('active-menu');
+                }
+            }
+        });
+    });
+// terminando header
+</script>
+
+    <div class="flex flex-col flex-grow overflow-hidden">
+    </div>
+
+    <main class="flex-1 p-6 md:p-8 space-y-8 overflow-y-auto">
+        <h1 class="font-extrabold text-5xl mb-4 text-center text-blue-900 tracking-wide select-none">Gerenciar Agendamentos e O.S.</h1>
+        <p class="text-lg text-gray-700 mb-8 text-center">Controle completo de suas ordens de serviço e agendamentos de manutenção.</p>
+
+        <div class="bg-white p-4 rounded-xl shadow-lg border border-gray-100 mb-8 flex justify-center gap-4 flex-wrap">
+            <button class="nav-btn-internal py-3 px-6 rounded-lg text-lg font-semibold transition-all duration-200 active bg-blue-600 text-white hover:bg-blue-700 shadow-md" data-view="agendarView">
+                <i class="ph ph-calendar-plus mr-2 text-xl"></i> Agendar Manutenção
+            </button>
+            <button class="nav-btn-internal py-3 px-6 rounded-lg text-lg font-semibold transition-all duration-200 text-blue-800 bg-gray-100 hover:bg-gray-200 hover:text-blue-900 shadow-sm" data-view="abertasView">
+                <i class="ph ph-list-checks mr-2 text-xl"></i> O.S Abertas
+            </button>
+            <button class="nav-btn-internal py-3 px-6 rounded-lg text-lg font-semibold transition-all duration-200 text-blue-800 bg-gray-100 hover:bg-gray-200 hover:text-blue-900 shadow-sm" data-view="fechadasView">
+                <i class="ph ph-check-circle mr-2 text-xl"></i> O.S Fechadas
+            </button>
+        </div>
+
+
+        <div id="agendarView" class="view active-view">
+            <div class="content-container bg-white p-8 rounded-3xl shadow-lg border border-gray-100">
+                <h2 class="text-blue-900 font-extrabold text-3xl mb-6 text-center flex items-center justify-center">
+                    <i class="ph ph-file-plus text-blue-600 text-4xl mr-3"></i> Abrir Nova Ordem de Serviço
+                </h2>
+                <form id="osForm" class="space-y-6">
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <div>
+                            <label for="veiculo" class="block text-gray-700 font-semibold mb-2">Nome do Veículo*</label>
+                            <div class="flex items-end gap-2">
+                                <input id="veiculo" class="w-full p-3 rounded-lg border border-gray-300 shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200" required placeholder="Digite o nome do veículo">
+                                <button type="button" id="searchVehicleBtn" class="lookup-btn bg-blue-600 hover:bg-blue-700 text-white text-xl p-3 rounded-lg flex-shrink-0 flex items-center justify-center">
+                                    <i class="ph ph-magnifying-glass"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="md:col-span-2 lg:col-span-2">
+                            <label class="block text-gray-700 font-semibold mb-2">Detalhes do Veículo Encontrado:</label>
+                            <div id="vehicleDetails" class="bg-gray-50 p-3 rounded-lg border border-gray-200 text-gray-700 text-sm italic">
+                                Nenhum veículo selecionado.
+                            </div>
+                        </div>
+                        <div>
+                            <label for="placa" class="block text-gray-700 font-semibold mb-2">Placa*</label>
+                            <input id="placa" class="w-full p-3 rounded-lg border border-gray-300 shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200" required readonly>
+                        </div>
+                        <div>
+                            <label for="modelo" class="block text-gray-700 font-semibold mb-2">Modelo</label>
+                            <input id="modelo" class="w-full p-3 rounded-lg border border-gray-300 shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200" readonly>
+                        </div>
+                        <div>
+                            <label for="motorista" class="block text-gray-700 font-semibold mb-2">Motorista</label>
+                            <input id="motorista" class="w-full p-3 rounded-lg border border-gray-300 shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200">
+                        </div>
+                        <div>
+                            <label for="centroCusto" class="block text-gray-700 font-semibold mb-2">Centro de Custo</label>
+                            <div class="flex items-end gap-2">
+                                <input id="centroCusto" placeholder="Clique na lupa para selecionar..." readonly class="flex-grow p-3 rounded-lg border border-gray-300 shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 bg-gray-50 cursor-pointer">
+                                <button type="button" id="openCostCenterModalBtn" class="lookup-btn bg-gray-500 hover:bg-gray-600 text-white text-xl p-3 rounded-lg flex-shrink-0 flex items-center justify-center">
+                                    <i class="ph ph-magnifying-glass"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div>
+                            <label for="combustivel" class="block text-gray-700 font-semibold mb-2">Tipo de Combustível</label>
+                            <select id="combustivel" class="w-full p-3 rounded-lg border border-gray-300 shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200" disabled>
+                                <option value="">Selecione um veículo</option>
+                                <option>Diesel</option><option>Gasolina</option><option>Etanol</option><option>GNV</option><option>Elétrico</option><option>Flex</option><option>Híbrido</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="horimetro" class="block text-gray-700 font-semibold mb-2">Horímetro (h)</label>
+                            <input id="horimetro" type="number" step="0.1" class="w-full p-3 rounded-lg border border-gray-300 shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200" disabled>
+                        </div>
+                        <div>
+                            <label for="odometro" class="block text-gray-700 font-semibold mb-2">Odômetro (Km)</label>
+                            <input id="odometro" type="number" class="w-full p-3 rounded-lg border border-gray-300 shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200" disabled>
+                        </div>
+                        <div>
+                            <label for="tipoManutencao" class="block text-gray-700 font-semibold mb-2">Tipo de Manutenção</label>
+                            <select id="tipoManutencao" class="w-full p-3 rounded-lg border border-gray-300 shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200">
+                                <option>Preventiva</option><option>Lubrificação</option><option>Corretiva</option><option>Inspeção</option><option>Elétrica</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="prioridade" class="block text-gray-700 font-semibold mb-2">Prioridade</label>
+                            <select id="prioridade" class="w-full p-3 rounded-lg border border-gray-300 shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200">
+                                <option>Baixa</option><option selected>Média</option><option>Alta</option><option>Urgente</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="data" class="block text-gray-700 font-semibold mb-2">Data Programada</label>
+                            <input id="data" type="date" class="w-full p-3 rounded-lg border border-gray-300 shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200" required>
+                        </div>
+                        <div>
+                            <label for="hora" class="block text-gray-700 font-semibold mb-2">Hora Programada</label>
+                            <input id="hora" type="time" class="w-full p-3 rounded-lg border border-gray-300 shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200" required>
+                        </div>
+                        <div class="col-span-full">
+                            <label for="motivo" class="block text-gray-700 font-semibold mb-2">Motivo / Solicitação</label>
+                            <textarea id="motivo" rows="4" class="w-full p-3 rounded-lg border border-gray-300 shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200" required></textarea>
+                        </div>
+                        <div class="col-span-full flex justify-center mt-6">
+                            <button type="submit" class="bg-blue-700 text-white font-bold text-lg py-3 px-8 rounded-lg hover:bg-blue-800 transition-colors duration-300 shadow-md flex items-center justify-center">
+                                <i class="ph ph-plus-circle text-xl mr-2"></i> Criar Ordem de Serviço
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div id="abertasView" class="view hidden">
+            <div class="content-container bg-white p-8 rounded-3xl shadow-lg border border-gray-100">
+                <h2 class="text-blue-900 font-extrabold text-3xl mb-6 text-center flex items-center justify-center">
+                    <i class="ph ph-clipboard-text text-blue-600 text-4xl mr-3"></i> Ordens de Serviço Abertas
+                </h2>
+                <div class="os-table-wrapper overflow-x-auto rounded-lg border border-gray-200">
+                    <table class="os-table w-full whitespace-nowrap">
+                        <thead>
+                            <tr>
+                                <th>OS #</th>
+                                <th>Veículo/Placa</th>
+                                <th>Motorista</th>
+                                <th>Data</th>
+                                <th>Prioridade</th>
+                                <th>Tipo</th>
+                                <th>Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody id="openOsTableBody"></tbody>
+                    </table>
+                </div>
+                <p id="noOpenOsMessage" class="no-os-message hidden text-center text-gray-500 mt-4">Nenhuma O.S. aberta no momento.</p>
+            </div>
+        </div>
+
+        <div id="fechadasView" class="view hidden">
+            <div class="content-container bg-white p-8 rounded-3xl shadow-lg border border-gray-100">
+                <h2 class="text-blue-900 font-extrabold text-3xl mb-6 text-center flex items-center justify-center">
+                    <i class="ph ph-archive-box text-blue-600 text-4xl mr-3"></i> Histórico de O.S. Fechadas
+                </h2>
+                <div class="os-table-wrapper overflow-x-auto rounded-lg border border-gray-200">
+                    <table class="os-table w-full whitespace-nowrap">
+                        <thead>
+                            <tr>
+                                <th>OS #</th>
+                                <th>Veículo/Placa</th>
+                                <th>Conclusão</th>
+                                <th>Tipo</th>
+                                <th>Motivo</th>
+                            </tr>
+                        </thead>
+                        <tbody id="closedOsTableBody"></tbody>
+                    </table>
+                </div>
+                <p id="noClosedOsMessage" class="no-os-message hidden text-center text-gray-500 mt-4">Nenhuma O.S. foi fechada ainda.</p>
+            </div>
+        </div>
+    </main>
+
+    <div id="costCenterModal" class="modal-overlay fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-[1000] opacity-0 pointer-events-none transition-opacity duration-300">
+        <div class="modal-content bg-white rounded-xl w-[90%] max-w-xl shadow-2xl flex flex-col max-h-[90vh] transform -translate-y-5 transition-transform duration-300">
+            <header class="modal-header flex justify-between items-center border-b border-gray-200 p-6">
+                <h3 class="text-blue-700 font-bold text-2xl">Selecionar Centro de Custo</h3>
+                <button class="modal-close-btn bg-transparent border-none text-gray-500 text-4xl cursor-pointer hover:text-gray-700 transition-colors duration-200">&times;</button>
+            </header>
+            <div class="modal-body p-6 overflow-y-auto">
+                <div class="os-table-wrapper overflow-x-auto rounded-lg border border-gray-200">
+                    <table class="os-table w-full whitespace-nowrap">
+                        <thead>
+                            <tr>
+                                <th>Código</th>
+                                <th>Empresa</th>
+                                <th>Ação</th>
+                            </tr>
+                        </thead>
+                        <tbody id="costCenterTableBody">
+                            </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="vehicleSearchModal" class="modal-overlay fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-[1000] opacity-0 pointer-events-none transition-opacity duration-300">
+        <div class="modal-content bg-white rounded-xl w-[90%] max-w-2xl shadow-2xl flex flex-col max-h-[90vh] transform -translate-y-5 transition-transform duration-300">
+            <header class="modal-header flex justify-between items-center border-b border-gray-200 p-6">
+                <h3 class="text-blue-700 font-bold text-2xl">Selecionar Veículo</h3>
+                <button class="modal-close-btn bg-transparent border-none text-gray-500 text-4xl cursor-pointer hover:text-gray-700 transition-colors duration-200" id="closeVehicleSearchModalBtn">&times;</button>
+            </header>
+            <div class="modal-body p-6 overflow-y-auto">
+                <div class="os-table-wrapper overflow-x-auto rounded-lg border border-gray-200">
+                    <table class="os-table w-full whitespace-nowrap">
+                        <thead>
+                            <tr>
+                                <th>Nome</th>
+                                <th>Marca</th>
+                                <th>Modelo</th>
+                                <th>Placa</th>
+                                <th>Tipo</th>
+                                <th>Ação</th>
+                            </tr>
+                        </thead>
+                        <tbody id="foundVehiclesTableBody">
+                            </tbody>
+                    </table>
+                </div>
+                <p id="noVehiclesFoundMessage" class="no-os-message hidden text-center text-gray-500 mt-4">Nenhum veículo encontrado com este nome.</p>
+            </div>
+        </div>
+    </div>
+
+    <div id="confirmModal" class="modal-overlay fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-[1001] opacity-0 pointer-events-none transition-opacity duration-300">
+        <div class="modal-content bg-white rounded-xl p-8 w-[90%] max-w-md shadow-2xl flex flex-col items-center text-center transform -translate-y-5 transition-transform duration-300">
+            <h3 id="confirmModalTitle" class="text-blue-700 font-bold text-2xl mb-4">Título do Modal</h3>
+            <p id="confirmModalMessage" class="text-gray-700 mb-6">Mensagem de confirmação.</p>
+            <div class="flex gap-4">
+                <button id="confirmModalYes" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-5 rounded-lg transition-colors duration-200">Sim</button>
+                <button id="confirmModalNo" class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-semibold py-2 px-5 rounded-lg transition-colors duration-200">Não</button>
+            </div>
+        </div>
+    </div>
+
+
+    <div id="userFeedback" class="fixed top-20 right-4 bg-green-500 text-white px-4 py-2 rounded-lg shadow-lg z-[1001] hidden"></div>
+
+    <script src="js/agendamento.js" defer></script>
+    <script>
+        // Funções globais de menu e logout (mantidas aqui para compatibilidade e fácil acesso do HTML)
+        function toggleDropdown(id, event) {
+            event.preventDefault();
+            event.stopPropagation();
+
+            const menu = document.getElementById(id);
+            document.querySelectorAll('.dropdown-content').forEach(m => {
+                if (m !== menu && !m.classList.contains('hidden')) {
+                    m.classList.add('hidden');
+                    m.classList.remove('flex');
+                    if (m.previousElementSibling) {
+                        m.previousElementSibling.setAttribute('aria-expanded', 'false');
+                    }
+                }
+            });
+
+            if (menu.classList.contains('hidden')) {
+                menu.classList.remove('hidden');
+                menu.classList.add('flex');
+                if (menu.previousElementSibling) {
+                    menu.previousElementSibling.setAttribute('aria-expanded', 'true');
+                }
+            } else {
+                menu.classList.remove('flex');
+                menu.classList.add('hidden');
+                if (menu.previousElementSibling) {
+                    menu.previousElementSibling.setAttribute('aria-expanded', 'false');
+                }
+            }
+        }
+
+        document.addEventListener('click', function(event) {
+            const dropdowns = document.querySelectorAll('.dropdown-content');
+            dropdowns.forEach(dropdown => {
+                if (!dropdown.contains(event.target) && !dropdown.previousElementSibling.contains(event.target)) {
+                    if (!dropdown.classList.contains('hidden')) {
+                        dropdown.classList.add('hidden');
+                        dropdown.classList.remove('flex');
+                        if (dropdown.previousElementSibling) {
+                            dropdown.previousElementSibling.setAttribute('aria-expanded', 'false');
+                        }
+                    }
+                }
+            });
+        });
+
+        // A função logout agora será tratada exclusivamente pelo 'agendamento.js'
+        // e é exposta globalmente lá (window.logout = logout;).
+        // A remoção da função duplicada aqui é um detalhe.
+    </script>
+</body>
+</html>

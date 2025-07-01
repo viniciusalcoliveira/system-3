@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>PL - Plano de Lubrificação - EFM Frotas</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+
+    <link rel="stylesheet" href="css/pl.css">
+
+
+</head>
+<body class="overflow-x-hidden bg-gray-100 font-poppins">
+
+   <header class="bg-blue-800 text-white p-4 flex flex-col md:flex-row items-center justify-between shadow-lg sticky top-0 z-50 rounded-b-xl">
+    <div class="font-extrabold text-3xl tracking-wider select-none mb-4 md:mb-0" tabindex="0">
+        <span class="text-white">EFM</span><span class="text-yellow-400"> FROTAS</span>
+    </div>
+
+    <nav class="flex flex-wrap gap-x-4 gap-y-2 items-center justify-center" role="navigation" aria-label="Menu principal">
+
+        <a href="dashboard.html" class="menu-link text-white font-semibold text-base py-2 px-2 relative whitespace-nowrap border-b-4 border-transparent hover:text-yellow-300 hover:border-yellow-300 transition">
+            Dashboard
+        </a>
+
+        <div class="relative dropdown">
+            <button onclick="toggleDropdown('menu-configuracoes', event)" class="menu-link text-white font-semibold text-base py-2 px-2 hover:text-yellow-300 hover:border-yellow-300 border-b-4 border-transparent transition">
+                Configurações <i class="ph ph-caret-down ml-1"></i>
+            </button>
+            <div id="menu-configuracoes" class="dropdown-content hidden absolute top-12 left-0 bg-white rounded-xl shadow-xl min-w-[220px] flex-col z-[9999] overflow-hidden">
+                <a href="cadastroveiculos.html" class="dropdown-item">Cadastro de Veículos</a>
+                <a href="cadastro_marcas.html" class="dropdown-item">Cadastro de Marcas</a>
+            </div>
+        </div>
+
+        <div class="relative dropdown">
+            <button onclick="toggleDropdown('menu-plano', event)" class="menu-link text-white font-semibold text-base py-2 px-2 hover:text-yellow-300 hover:border-yellow-300 border-b-4 border-transparent transition">
+                Plano de Manutenção <i class="ph ph-caret-down ml-1"></i>
+            </button>
+            <div id="menu-plano" class="dropdown-content hidden absolute top-12 left-0 bg-white rounded-xl shadow-xl min-w-[220px] flex-col z-[9999] overflow-hidden">
+                <a href="PMP.html" class="dropdown-item">PMP - Preventiva</a>
+                <a href="PL.html" class="dropdown-item">PL - Lubrificação</a>
+            </div>
+        </div>
+
+        <div class="relative dropdown">
+            <button onclick="toggleDropdown('menu-os', event)" class="menu-link text-white font-semibold text-base py-2 px-2 hover:text-yellow-300 hover:border-yellow-300 border-b-4 border-transparent transition">
+                Ordem de Serviço <i class="ph ph-caret-down ml-1"></i>
+            </button>
+            <div id="menu-os" class="dropdown-content hidden absolute top-12 left-0 bg-white rounded-xl shadow-xl min-w-[220px] flex-col z-[9999] overflow-hidden">
+                <a href="agendamento.html" class="dropdown-item">Gerar Ordem de Serviço</a>
+            </div>
+        </div>
+
+        <div class="relative dropdown">
+            <button onclick="toggleDropdown('menu-gerenciamento', event)" class="menu-link text-white font-semibold text-base py-2 px-2 hover:text-yellow-300 hover:border-yellow-300 border-b-4 border-transparent transition">
+                Gerenciamento <i class="ph ph-caret-down ml-1"></i>
+            </button>
+            <div id="menu-gerenciamento" class="dropdown-content hidden absolute top-12 left-0 bg-white rounded-xl shadow-xl min-w-[220px] flex-col z-[9999] overflow-hidden">
+                <a href="controle.html" class="dropdown-item">Controle</a>
+                <a href="index.html" class="dropdown-item">Visão Geral de Frota</a>
+            </div>
+        </div>
+
+        <a href="seguranca.html" class="menu-link text-white font-semibold text-base py-2 px-2 hover:text-yellow-300 hover:border-yellow-300 border-b-4 border-transparent transition">
+            Segurança
+        </a>
+
+        <a href="#" onclick="logout()" class="menu-link text-white font-semibold text-base py-2 px-2 hover:text-yellow-300 hover:border-yellow-300 border-b-4 border-transparent transition">
+            Sair
+        </a>
+    </nav>
+</header>
+
+    <main class="max-w-4xl mx-auto my-12 px-4 md:px-6 flex-grow">
+        <h1 class="font-extrabold text-4xl md:text-5xl mb-10 text-center text-blue-900 tracking-wide select-none">Cadastro de Plano de Lubrificação</h1>
+        <p class="text-lg text-gray-700 mb-8 text-center">Cadastre um novo plano de lubrificação personalizado para sua frota.</p>
+
+        <nav class="flex flex-wrap justify-center border-b border-gray-200 mb-8" aria-label="Abas de Manutenção">
+            <a href="PlanoManutenção.html" class="tab-button text-gray-600 hover:text-blue-800 py-3 px-4 font-medium transition-colors duration-200">Voltar para Planos</a>
+            <a href="pl.html" class="tab-button active text-blue-800 border-b-2 border-blue-600 py-3 px-4 font-semibold transition-colors duration-200">PL - Cadastro de Plano de Lubrificação</a>
+            <a href="pmp.html" class="tab-button text-gray-600 hover:text-blue-800 py-3 px-4 font-medium transition-colors duration-200">PMP - Plano de Manutenção Preventiva</a>
+        </nav>
+
+        <section class="card-section bg-white rounded-xl shadow-lg p-8" aria-label="Formulário de Cadastro de Plano de Lubrificação">
+            <form id="cadastroPlanoForm" class="space-y-6">
+                <div class="form-group">
+                    <label for="veiculo" class="form-label">Escolha seu Veículo (Nome ou Nº de Frota):</label>
+                    <input type="text" id="veiculo" name="veiculo" class="form-input" placeholder="Ex: Caminhão Basculante SCANIA P420 - B6X4 ou Frota 11.067" required />
+                </div>
+
+                <div class="form-group">
+                    <label for="periodicidade" class="form-label">Periodicidade (Horas):</label>
+                    <select id="periodicidade" name="periodicidade" class="form-input" required>
+                        <option value="">-- Selecione a Periodicidade --</option>
+                        <option value="250">250 HR</option>
+                        <option value="500">500 HR</option>
+                        <option value="1000">1000 HR</option>
+                        <option value="2000">2000 HR</option>
+                    </select>
+                </div>
+
+                <h3 class="section-title flex items-center text-blue-700 font-semibold text-lg mb-4 mt-8">
+                    <i class="ph ph-hard-drives text-blue-600 text-2xl mr-2"></i> Escolha os Compartimentos
+                </h3>
+                <div id="compartimentoOptions" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 mb-4">
+                    <label class="checkbox-label flex items-center gap-2 cursor-pointer text-gray-700">
+                        <input type="checkbox" name="compartimento" value="MOTOR" class="form-checkbox h-4 w-4 text-blue-600 rounded" />
+                        MOTOR
+                    </label>
+                    <label class="checkbox-label flex items-center gap-2 cursor-pointer text-gray-700">
+                        <input type="checkbox" name="compartimento" value="CAIXA DE MARCHA" class="form-checkbox h-4 w-4 text-blue-600 rounded" />
+                        CAIXA DE MARCHA
+                    </label>
+                    <label class="checkbox-label flex items-center gap-2 cursor-pointer text-gray-700">
+                        <input type="checkbox" name="compartimento" value="RETARDO" class="form-checkbox h-4 w-4 text-blue-600 rounded" />
+                        RETARDO
+                    </label>
+                    <label class="checkbox-label flex items-center gap-2 cursor-pointer text-gray-700">
+                        <input type="checkbox" name="compartimento" value="CILINDRO DE CURSO (opticruise)" class="form-checkbox h-4 w-4 text-blue-600 rounded" />
+                        CILINDRO DE CURSO (opticruise)
+                    </label>
+                    <label class="checkbox-label flex items-center gap-2 cursor-pointer text-gray-700">
+                        <input type="checkbox" name="compartimento" value="DIFERENCIAL TRASEIRO I" class="form-checkbox h-4 w-4 text-blue-600 rounded" />
+                        DIFERENCIAL TRASEIRO I
+                    </label>
+                    <label class="checkbox-label flex items-center gap-2 cursor-pointer text-gray-700">
+                        <input type="checkbox" name="compartimento" value="DIFERENCIAL TRASEIRO II" class="form-checkbox h-4 w-4 text-blue-600 rounded" />
+                        DIFERENCIAL TRASEIRO II
+                    </label>
+                    <label class="checkbox-label flex items-center gap-2 cursor-pointer text-gray-700">
+                        <input type="checkbox" name="compartimento" value="SISTEMA DE DIREÇÃO" class="form-checkbox h-4 w-4 text-blue-600 rounded" />
+                        SISTEMA DE DIREÇÃO
+                    </label>
+                    <label class="checkbox-label flex items-center gap-2 cursor-pointer text-gray-700">
+                        <input type="checkbox" name="compartimento" value="FILTROS - SUSPIROS - TELAS" class="form-checkbox h-4 w-4 text-blue-600 rounded" />
+                        FILTROS - SUSPIROS - TELAS
+                    </label>
+                    <label class="checkbox-label flex items-center gap-2 cursor-pointer text-gray-700">
+                        <input type="checkbox" name="compartimento" value="OUTROS" class="form-checkbox h-4 w-4 text-blue-600 rounded" />
+                        OUTROS
+                    </label>
+                </div>
+                <button type="button" id="selectAllCompartments" class="action-button bg-blue-600 hover:bg-blue-700 mb-8">
+                    <i class="ph ph-check-square"></i> Selecione todos os Compartimentos
+                </button>
+
+                ---
+
+                <h3 class="section-title flex items-center text-blue-700 font-semibold text-lg mb-4 mt-8">
+                    <i class="ph ph-wrench text-blue-600 text-2xl mr-2"></i> Escolha o Tipo de Plano de Serviço
+                </h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                    <div id="option-criar-plano" class="service-option-box">
+                        <h3><i class="ph ph-list-checks mr-2"></i> Criar Plano de Serviço</h3>
+                        <p>Monte seu plano personalizado, escolhendo cada item de manutenção.</p>
+                    </div>
+                    <div id="option-plano-premium" class="service-option-box">
+                        <h3><i class="ph ph-sparkle-four mr-2"></i> Plano Premium</h3>
+                        <p>A melhor opção! Checagem e lubrificação completas para seu veículo.</p>
+                    </div>
+                </div>
+
+                <div id="criarPlanoDetalhes" class="space-y-6 hidden">
+                    <div class="servico-item border p-4 rounded-md bg-gray-50">
+                        <label class="form-label" for="servico-trocar">Trocar?</label>
+                        <select id="servico-trocar" class="form-input toggle-subfield" data-target="detalhes-trocar">
+                            <option value="">Selecione</option>
+                            <option value="sim">Sim</option>
+                            <option value="nao">Não</option>
+                        </select>
+
+                        <div id="detalhes-trocar" class="subfield hidden mt-4 pl-4 border-l-4 border-blue-600">
+                            <label class="form-label" for="trocar-tipo">O que deseja trocar?</label>
+                            <select id="trocar-tipo" name="trocar-tipo" class="form-input">
+                                <option value="">Selecione</option>
+                                <option value="oleo">Óleo</option>
+                                <option value="peca">Peça</option>
+                            </select>
+
+                            <div id="trocar-oleo" class="hidden mt-4">
+                                <label class="form-label" for="litros-oleo">Quantidade de Litros:</label>
+                                <input type="number" id="litros-oleo" name="litros-oleo" class="form-input" placeholder="Ex: 37" min="0" step="0.1" />
+                            </div>
+
+                            <div id="trocar-peca" class="hidden mt-4">
+                                <label class="form-label" for="ref-peca">Referência da peça:</label>
+                                <input type="text" id="ref-peca" name="ref-peca" class="form-input mb-2" placeholder="Ex: 1117285" />
+                                <label class="form-label" for="quant-peca">Quantidade de peças:</label>
+                                <input type="number" id="quant-peca" name="quant-peca" class="form-input" placeholder="Ex: 1" min="1" />
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="servico-item border p-4 rounded-md bg-gray-50">
+                        <label class="form-label" for="servico-limpar">Limpar?</label>
+                        <select id="servico-limpar" class="form-input toggle-subfield" data-target="detalhes-limpar">
+                            <option value="">Selecione</option>
+                            <option value="sim">Sim</option>
+                            <option value="nao">Não</option>
+                        </select>
+                        <div id="detalhes-limpar" class="subfield hidden mt-4 pl-4 border-l-4 border-blue-600">
+                            <label class="form-label" for="obs-limpar">Observações:</label>
+                            <input type="text" id="obs-limpar" name="obs-limpar" class="form-input" placeholder="Ex: Limpar filtros" />
+                        </div>
+                    </div>
+
+                    <div class="servico-item border p-4 rounded-md bg-gray-50">
+                        <label class="form-label" for="servico-lubrificar">Lubrificar?</label>
+                        <select id="servico-lubrificar" class="form-input toggle-subfield" data-target="detalhes-lubrificar">
+                            <option value="">Selecione</option>
+                            <option value="sim">Sim</option>
+                            <option value="nao">Não</option>
+                        </select>
+                        <div id="detalhes-lubrificar" class="subfield hidden mt-4 pl-4 border-l-4 border-blue-600">
+                            <label class="form-label" for="obs-lubrificar">Observações:</label>
+                            <input type="text" id="obs-lubrificar" name="obs-lubrificar" class="form-input" placeholder="Ex: Lubrificar rolamentos" />
+                        </div>
+                    </div>
+
+                    <div class="servico-item border p-4 rounded-md bg-gray-50">
+                        <label class="form-label" for="servico-lavar">Lavar?</label>
+                        <select id="servico-lavar" class="form-input toggle-subfield" data-target="detalhes-lavar">
+                            <option value="">Selecione</option>
+                            <option value="sim">Sim</option>
+                            <option value="nao">Não</option>
+                        </select>
+                        <div id="detalhes-lavar" class="subfield hidden mt-4 pl-4 border-l-4 border-blue-600">
+                            <label class="form-label" for="obs-lavar">Observações:</label>
+                            <input type="text" id="obs-lavar" name="obs-lavar" class="form-input" placeholder="Ex: Lavar carroceria" />
+                        </div>
+                    </div>
+
+                    <div class="servico-item border p-4 rounded-md bg-gray-50">
+                        <label class="form-label" for="servico-substituir">Substituir?</label>
+                        <select id="servico-substituir" class="form-input toggle-subfield" data-target="detalhes-substituir">
+                            <option value="">Selecione</option>
+                            <option value="sim">Sim</option>
+                            <option value="nao">Não</option>
+                        </select>
+                        <div id="detalhes-substituir" class="subfield hidden mt-4 pl-4 border-l-4 border-blue-600">
+                            <label class="form-label" for="obs-substituir">Observações:</label>
+                            <input type="text" id="obs-substituir" name="obs-substituir" class="form-input" placeholder="Ex: Substituir filtro de ar" />
+                        </div>
+                    </div>
+                </div>
+
+                <div id="planoPremiumDetalhes" class="hidden text-center bg-yellow-50 border border-yellow-200 text-yellow-800 p-6 rounded-lg text-lg my-6">
+                    <i class="ph ph-star text-yellow-600 text-4xl mb-3"></i>
+                    <h3 class="font-bold text-xl mb-2">Plano Premium Selecionado!</h3>
+                    <p>O Plano Premium oferece uma checagem completa e lubrificação abrangente para seu veículo, garantindo o melhor desempenho e vida útil. Não é necessário selecionar serviços adicionais, pois tudo já está incluído!</p>
+                </div>
+
+                <button type="submit" class="action-button bg-green-600 hover:bg-green-700 mt-8">
+                    <i class="ph ph-check-circle mr-2"></i> Cadastrar Plano
+                </button>
+            </form>
+        </section>
+    </main>
+
+<script src="js/PL.js"></script>
+</body>
+</html>

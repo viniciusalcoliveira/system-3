@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Segurança - EFM Frotas</title>
+    <!-- Google Fonts: Poppins for modern typography -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <!-- Tailwind CSS CDN for utility-first styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Phosphor Icons for modern and clean iconography -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+
+    <!-- Configure Tailwind to use Poppins font -->
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f0f4f8; /* Light background for a clean look */
+            color: #2c3e50; /* Darker text for readability */
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased; /* Smoother font rendering */
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        /* Custom animation for dropdown fade-in */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scaleY(0.9) translateY(-10px); }
+            to { opacity: 1; transform: scaleY(1) translateY(0); }
+        }
+        .animate-fade-in {
+            animation: fadeIn 0.3s ease-out forwards;
+            transform-origin: top;
+        }
+
+        /* Custom scrollbar styling for a consistent look */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background-color: rgba(11, 61, 145, 0.6); /* Semi-transparent primary blue */
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-track {
+            background: rgba(11, 61, 145, 0.1); /* Lighter track */
+        }
+    </style>
+</head>
+<body class="overflow-x-hidden">
+
+    <!-- Header Section - Consistent with other pages -->
+    <header class="bg-blue-800 text-white p-4 flex flex-col md:flex-row items-center justify-between shadow-lg sticky top-0 z-50 rounded-b-xl">
+    <div class="font-extrabold text-3xl tracking-wider select-none mb-4 md:mb-0" tabindex="0">
+        <span class="text-white">EFM</span><span class="text-yellow-400"> FROTAS</span>
+    </div>
+
+    <nav class="flex flex-wrap gap-x-4 gap-y-2 items-center justify-center" role="navigation" aria-label="Menu principal">
+
+        <a href="dashboard.html" class="menu-link text-white font-semibold text-base py-2 px-2 relative whitespace-nowrap border-b-4 border-transparent hover:text-yellow-300 hover:border-yellow-300 transition">
+            Dashboard
+        </a>
+
+        <div class="relative dropdown">
+            <button onclick="toggleDropdown('menu-configuracoes', event)" class="menu-link text-white font-semibold text-base py-2 px-2 hover:text-yellow-300 hover:border-yellow-300 border-b-4 border-transparent transition">
+                Configurações <i class="ph ph-caret-down ml-1"></i>
+            </button>
+            <div id="menu-configuracoes" class="dropdown-content hidden absolute top-12 left-0 bg-white rounded-xl shadow-xl min-w-[220px] flex-col z-[9999] overflow-hidden">
+                <a href="CadastroVeiculos.html" class="dropdown-item">Cadastro de Veículos</a>
+                <a href="" class="dropdown-item">Cadastro de Marcas</a>
+
+            </div>
+        </div>
+
+        <div class="relative dropdown">
+            <button onclick="toggleDropdown('menu-plano', event)" class="menu-link text-white font-semibold text-base py-2 px-2 hover:text-yellow-300 hover:border-yellow-300 border-b-4 border-transparent transition">
+                Plano de Manutenção <i class="ph ph-caret-down ml-1"></i>
+            </button>
+            <div id="menu-plano" class="dropdown-content hidden absolute top-12 left-0 bg-white rounded-xl shadow-xl min-w-[220px] flex-col z-[9999] overflow-hidden">
+                <a href="PMP.html" class="dropdown-item">PMP - Preventiva</a>
+                <a href="PL.html" class="dropdown-item">PL - Lubrificação</a>
+            </div>
+        </div>
+
+        <div class="relative dropdown">
+            <button onclick="toggleDropdown('menu-os', event)" class="menu-link text-white font-semibold text-base py-2 px-2 hover:text-yellow-300 hover:border-yellow-300 border-b-4 border-transparent transition">
+                Ordem de Serviço <i class="ph ph-caret-down ml-1"></i>
+            </button>
+            <div id="menu-os" class="dropdown-content hidden absolute top-12 left-0 bg-white rounded-xl shadow-xl min-w-[220px] flex-col z-[9999] overflow-hidden">
+                <a href="agendamento.html" class="dropdown-item">Gerar Ordem de Serviço</a>
+            </div>
+        </div>
+
+        <div class="relative dropdown">
+            <button onclick="toggleDropdown('menu-gerenciamento', event)" class="menu-link text-white font-semibold text-base py-2 px-2 hover:text-yellow-300 hover:border-yellow-300 border-b-4 border-transparent transition">
+                Gerenciamento <i class="ph ph-caret-down ml-1"></i>
+            </button>
+            <div id="menu-gerenciamento" class="dropdown-content hidden absolute top-12 left-0 bg-white rounded-xl shadow-xl min-w-[220px] flex-col z-[9999] overflow-hidden">
+                <a href="controle.html" class="dropdown-item">Controle</a>
+                <a href="index.html" class="dropdown-item">Visão Geral de Frota</a>
+            </div>
+        </div>
+
+        <a href="seguranca.html" class="menu-link text-white font-semibold text-base py-2 px-2 hover:text-yellow-300 hover:border-yellow-300 border-b-4 border-transparent transition">
+            Segurança
+        </a>
+
+        <a href="#" onclick="logout()" class="menu-link text-white font-semibold text-base py-2 px-2 hover:text-yellow-300 hover:border-yellow-300 border-b-4 border-transparent transition">
+            Sair
+        </a>
+    </nav>
+</header>
+
+<style>
+    .active-menu {
+        color: #facc15 !important; /* yellow-300 */
+        border-bottom: 4px solid #facc15 !important; /* yellow-300 */
+    }
+
+    .dropdown-item {
+        padding: 0.75rem 1.5rem;
+        color: #374151; /* gray-700 */
+        font-weight: 500;
+        white-space: nowrap;
+    }
+
+    .dropdown-item:hover {
+        background-color: #eff6ff; /* blue-50 */
+        color: #1e40af; /* blue-800 */
+    }
+</style>
+
+<script>
+    function toggleDropdown(menuId, event) {
+        event.stopPropagation();
+        document.querySelectorAll('.dropdown-content').forEach(menu => menu.classList.add('hidden'));
+        document.getElementById(menuId).classList.toggle('hidden');
+    }
+
+    document.addEventListener('click', function() {
+        document.querySelectorAll('.dropdown-content').forEach(menu => menu.classList.add('hidden'));
+    });
+
+    // Função para ativar o item de menu correto
+    function activateMenuItem() {
+        const currentPath = window.location.pathname.split('/').pop(); // Pega o nome do arquivo da URL (ex: "dashboard.html")
+
+        document.querySelectorAll('.menu-link, .dropdown-item').forEach(item => {
+            // Remove a classe 'active-menu' de todos os itens primeiro
+            item.classList.remove('active-menu');
+
+            // Pega o href do item
+            const itemHref = item.getAttribute('href');
+
+            // Verifica se o href existe e se o caminho atual corresponde ao href
+            if (itemHref && itemHref.endsWith(currentPath)) {
+                item.classList.add('active-menu');
+
+                // Se o item ativo for um dropdown-item, também queremos "ativar" o botão pai do dropdown
+                let parentDropdown = item.closest('.dropdown');
+                if (parentDropdown) {
+                    let dropdownButton = parentDropdown.querySelector('.menu-link');
+                    if (dropdownButton) {
+                        dropdownButton.classList.add('active-menu');
+                    }
+                }
+            }
+        });
+    }
+
+    // Chama a função quando a página é carregada
+    document.addEventListener('DOMContentLoaded', activateMenuItem);
+
+    // Adiciona o evento de clique para que, ao navegar, a classe 'active-menu' seja aplicada imediatamente
+    document.querySelectorAll('.menu-link, .dropdown-item').forEach(item => {
+        item.addEventListener('click', function() {
+            // Remove a classe 'active-menu' de todos os itens ao clicar em um novo item
+            document.querySelectorAll('.menu-link, .dropdown-item').forEach(i => i.classList.remove('active-menu'));
+            // Adiciona a classe 'active-menu' ao item clicado
+            this.classList.add('active-menu');
+
+            // Se o item clicado for um dropdown-item, ativa também o botão pai do dropdown
+            let parentDropdown = this.closest('.dropdown');
+            if (parentDropdown) {
+                let dropdownButton = parentDropdown.querySelector('.menu-link');
+                if (dropdownButton) {
+                    dropdownButton.classList.add('active-menu');
+                }
+            }
+        });
+    });
+// terminando header
+</script>
+
+    <!-- Main Content Section - Redesigned Security Dashboard -->
+    <main class="max-w-7xl mx-auto my-12 px-4 md:px-6 flex-grow">
+        <h1 class="font-extrabold text-5xl mb-10 text-center text-blue-900 tracking-wide select-none">Verificação de Segurança da Frota</h1>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12">
+            <!-- Section: Security Check Form -->
+            <section class="bg-white p-6 md:p-8 rounded-3xl shadow-lg" aria-label="Formulário de verificação de segurança">
+                <h2 class="text-2xl font-bold text-blue-900 mb-6 flex items-center">
+                    <i class="ph ph-shield-check text-blue-600 text-3xl mr-3"></i> Realizar Verificação
+                </h2>
+                <form action="#" method="POST" class="space-y-6" onsubmit="handleSecurityCheck(event)">
+                    <div>
+                        <label for="placa" class="block font-semibold mb-2 text-gray-700 text-lg">Placa do Veículo:</label>
+                        <input type="text" id="placa" name="placa" class="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 text-lg" placeholder="ABC-1234" required>
+                    </div>
+
+                    <div>
+                        <label for="verificacao" class="block font-semibold mb-2 text-gray-700 text-lg">Tipo de Verificação:</label>
+                        <select id="verificacao" name="verificacao" class="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 text-lg">
+                            <option value="manutencao">Manutenção</option>
+                            <option value="vistoria">Vistoria</option>
+                            <option value="documentacao">Documentação</option>
+                            <option value="multas">Multas</option>
+                        </select>
+                    </div>
+
+                    <button type="submit" class="w-full bg-blue-800 text-white font-bold text-lg py-3 rounded-lg hover:bg-blue-700 transition-colors duration-300 shadow-md">
+                        Verificar
+                    </button>
+                </form>
+            </section>
+
+            <!-- Section: Last Security Check Result -->
+            <section class="bg-white p-6 md:p-8 rounded-3xl shadow-lg flex flex-col justify-between" aria-label="Último resultado de verificação de segurança">
+                <h2 class="text-2xl font-bold text-blue-900 mb-6 flex items-center">
+                    <i class="ph ph-clipboard-text text-blue-600 text-3xl mr-3"></i> Resultado da Última Verificação
+                </h2>
+                <div class="space-y-4 text-center">
+                    <p id="lastCheckStatus" class="text-gray-600 text-xl font-medium">Nenhuma verificação realizada ainda.</p>
+                    <p id="lastCheckDetails" class="text-gray-500 text-md"></p>
+                </div>
+                <div class="mt-8 flex justify-center">
+                    <button onclick="clearLastCheck()" class="bg-gray-200 text-gray-700 font-semibold px-6 py-2 rounded-lg hover:bg-gray-300 transition-colors duration-300 shadow-sm">
+                        Limpar Resultado
+                    </button>
+                </div>
+            </section>
+        </div>
+
+        <!-- Section: Security Check History (Table) -->
+        <section class="bg-white p-6 md:p-8 rounded-3xl shadow-lg" aria-label="Histórico de verificações de segurança">
+            <h2 class="text-2xl font-bold text-blue-900 mb-6 flex items-center">
+                <i class="ph ph-clipboard-text text-blue-600 text-3xl mr-3"></i> Histórico de Verificações
+            </h2>
+            <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider rounded-tl-lg">Data</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Placa</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tipo</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Resultado</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider rounded-tr-lg">Detalhes</th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-gray-200" id="securityHistoryBody">
+                        <!-- Example rows - will be populated by JS for real data -->
+                        <tr>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">2025-07-20</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">ABC-1234</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Manutenção</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm"><span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">Concluído</span></td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Próxima em 10.000km</td>
+                        </tr>
+                        <tr>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">2025-07-18</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">DEF-5678</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Documentação</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm"><span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">Pendente</span></td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Licença Vencida</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        // --- SEGURANÇA DE LOGIN ---
+        // Redireciona para a página de login se o usuário não estiver 'logado'.
+        // Isso impede o acesso direto à dashboard sem autenticação.
+        // Added a check for __app_id to prevent redirection errors in the Canvas environment.
+        if (localStorage.getItem('logado') !== 'true') {
+            // Only redirect if not in the Canvas environment (where __app_id is defined).
+            if (typeof __app_id === 'undefined') {
+                window.location.href = 'login.html';
+            } else {
+                // For Canvas environment, set logged in state for demonstration.
+                console.log("Running in Canvas environment, bypassing login redirect.");
+                localStorage.setItem('logado', 'true');
+            }
+        }
+
+        // Função para realizar logout.
+        // Remove o status de 'logado' e redireciona para a página de login.
+        function logout() {
+            localStorage.removeItem('logado');
+            // Only redirect if not in the Canvas environment.
+            if (typeof __app_id === 'undefined') {
+                window.location.href = 'login.html';
+            } else {
+                console.log("Running in Canvas environment, logout simulated.");
+                // Optionally clear other session data or show a message for Canvas.
+            }
+        }
+
+        // --- FUNCIONALIDADE DE DROPDOWN MENUS ---
+        // Função para alternar a visibilidade de um menu dropdown específico.
+        function toggleDropdown(id, event) {
+            // Previne o comportamento padrão do clique (ex: navegação de links)
+            // e impede que o evento se propague para elementos pai (evitando o fechamento imediato pelo listener global).
+            event.preventDefault();
+            event.stopPropagation();
+
+            const menu = document.getElementById(id);
+            // Verifica se o menu está visível (display 'flex' indica visível).
+            const isVisible = menu.style.display === 'flex';
+
+            // Fecha *todos* os outros dropdowns que possam estar abertos,
+            // garantindo que apenas um dropdown esteja ativo por vez.
+            document.querySelectorAll('.dropdown-content').forEach(m => {
+                if (m !== menu) { // Não fecha o menu que está sendo clicado.
+                    m.style.display = 'none';
+                    // Atualiza o atributo ARIA para refletir o estado fechado, importante para acessibilidade.
+                    if (m.previousElementSibling) {
+                        m.previousElementSibling.setAttribute('aria-expanded', 'false');
+                        m.classList.remove('animate-fade-in'); // Remove a classe de animação para o próximo show
+                    }
+                }
+            });
+
+            // Alterna a visibilidade do dropdown alvo e aplica/remove a animação.
+            if (!isVisible) {
+                menu.style.display = 'flex'; // Opens the menu as a flexible container.
+                menu.style.flexDirection = 'column'; // Ensures items align vertically.
+                menu.classList.add('animate-fade-in'); // Adds the animation class for smooth entry.
+                // Updates the ARIA attribute to 'true', indicating the menu is open.
+                if (menu.previousElementSibling) {
+                    menu.previousElementSibling.setAttribute('aria-expanded', 'true');
+                }
+            } else {
+                // When closing, we can add a small exit animation if desired,
+                // but for simplicity, we just hide it.
+                menu.style.display = 'none'; // Closes the menu.
+                menu.classList.remove('animate-fade-in'); // Removes the animation class.
+                // Updates the ARIA attribute to 'false'.
+                if (menu.previousElementSibling) {
+                    menu.previousElementSibling.setAttribute('aria-expanded', 'false');
+                }
+            }
+        }
+
+        // Global listener to close any dropdown when the user clicks outside any dropdown.
+        document.addEventListener('click', (event) => {
+            // Checks if the click occurred inside a dropdown (either the button or the content).
+            // If the click was not inside an element with the 'dropdown' or 'dropdown-content' class,
+            // then close all open dropdowns.
+            const isClickInsideDropdown = event.target.closest('.dropdown');
+            if (!isClickInsideDropdown) {
+                document.querySelectorAll('.dropdown-content').forEach(menu => {
+                    if (menu.style.display === 'flex') { // Only close if visible.
+                        menu.style.display = 'none'; // Hides the menu.
+                        menu.classList.remove('animate-fade-in'); // Removes the animation class.
+                        // Updates the ARIA attribute to 'false'.
+                        if (menu.previousElementSibling) {
+                            menu.previousElementSibling.setAttribute('aria-expanded', 'false');
+                        }
+                    }
+                });
+            }
+        });
+
+        // --- SECURITY CHECK LOGIC ---
+        // Function to handle the security check form submission
+        function handleSecurityCheck(event) {
+            event.preventDefault(); // Prevent default form submission
+
+            const placa = document.getElementById('placa').value;
+            const verificacao = document.getElementById('verificacao').value;
+            const lastCheckStatus = document.getElementById('lastCheckStatus');
+            const lastCheckDetails = document.getElementById('lastCheckDetails');
+            const securityHistoryBody = document.getElementById('securityHistoryBody');
+
+            // Simulate a check result (e.g., from an API call)
+            let statusText = '';
+            let detailsText = '';
+            let statusClass = ''; // Tailwind class for status styling
+
+            // Basic logic for demonstration
+            if (placa && verificacao) {
+                const currentDate = new Date().toISOString().slice(0, 10); //YYYY-MM-DD
+
+                if (placa.includes('PEND')) { // Example: Simulate a pending status
+                    statusText = 'Verificação Pendente';
+                    detailsText = `Verificação de ${verificacao} para a placa ${placa} aguardando aprovação.`;
+                    statusClass = 'bg-yellow-100 text-yellow-800';
+                } else if (placa.includes('VENC')) { // Example: Simulate an overdue/problem status
+                    statusText = 'Problema Encontrado';
+                    detailsText = `Verificação de ${verificacao} para a placa ${placa}: Documentação/Manutenção Vencida.`;
+                    statusClass = 'bg-red-100 text-red-800';
+                } else {
+                    statusText = 'Verificação Concluída';
+                    detailsText = `Verificação de ${verificacao} para a placa ${placa} realizada com sucesso.`;
+                    statusClass = 'bg-green-100 text-green-800';
+                }
+
+                lastCheckStatus.innerHTML = `<span class="px-2 inline-flex text-xl leading-5 font-semibold rounded-full ${statusClass}">${statusText}</span>`;
+                lastCheckDetails.textContent = detailsText;
+
+                // Add to history table
+                const newRow = securityHistoryBody.insertRow(0); // Insert at the beginning
+                const cell1 = newRow.insertCell(0);
+                const cell2 = newRow.insertCell(1);
+                const cell3 = newRow.insertCell(2);
+                const cell4 = newRow.insertCell(3);
+                const cell5 = newRow.insertCell(4);
+
+                cell1.className = 'px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900';
+                cell2.className = 'px-6 py-4 whitespace-nowrap text-sm text-gray-500';
+                cell3.className = 'px-6 py-4 whitespace-nowrap text-sm text-gray-500';
+                cell4.className = 'px-6 py-4 whitespace-nowrap text-sm';
+                cell5.className = 'px-6 py-4 whitespace-nowrap text-sm text-gray-500';
+
+                cell1.textContent = currentDate;
+                cell2.textContent = placa;
+                cell3.textContent = verificacao.charAt(0).toUpperCase() + verificacao.slice(1); // Capitalize first letter
+                cell4.innerHTML = `<span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${statusClass}">${statusText}</span>`;
+                cell5.textContent = detailsText;
+
+            } else {
+                lastCheckStatus.innerHTML = '<span class="px-2 inline-flex text-xl leading-5 font-semibold rounded-full bg-red-100 text-red-800">Erro: Preencha todos os campos.</span>';
+                lastCheckDetails.textContent = '';
+            }
+        }
+
+        // Function to clear the last check result
+        function clearLastCheck() {
+            document.getElementById('lastCheckStatus').textContent = 'Nenhuma verificação realizada ainda.';
+            document.getElementById('lastCheckStatus').className = 'text-gray-600 text-xl font-medium'; // Reset class
+            document.getElementById('lastCheckDetails').textContent = '';
+        }
+
+        // Ensure the dropdown and logout functions are available globally or attached correctly
+        // (They are already in the global scope from the header script block)
+    </script>
+</body>
+</html>

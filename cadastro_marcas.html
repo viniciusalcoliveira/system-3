@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Cadastro de Marcas - EFM Frotas</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <link rel="stylesheet" href="css/maquinas.css"> 
+
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f0f4f8; /* Light background for a clean look */
+            color: #2c3e50; /* Darker text for readability */
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased; /* Smoother font rendering */
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        /* Estilos específicos do Header e Dropdown */
+        .active-menu {
+            color: #facc15 !important; /* yellow-300 */
+            border-bottom: 4px solid #facc15 !important; /* yellow-300 */
+        }
+
+        .dropdown-item {
+            padding: 0.75rem 1.5rem;
+            color: #374151; /* gray-700 */
+            font-weight: 500;
+            white-space: nowrap;
+        }
+
+        .dropdown-item:hover {
+            background-color: #eff6ff; /* blue-50 */
+            color: #1e40af; /* blue-800 */
+        }
+
+        /* Animação para feedback (geral, pode ser usada em outras partes) */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fade-in {
+            animation: fadeIn 0.5s ease-out forwards;
+        }
+
+        /* Custom scrollbar styling for a consistent look */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background-color: rgba(11, 61, 145, 0.6); /* Semi-transparent primary blue */
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-track {
+            background: rgba(11, 61, 145, 0.1); /* Lighter track */
+        }
+    </style>
+
+    <script>
+        // --- SEGURANÇA DE LOGIN (mantendo a lógica global) ---
+        if (localStorage.getItem('logado') !== 'true') {
+            if (typeof __app_id === 'undefined') {
+                window.location.href = 'login.html';
+            } else {
+                console.log("Running in Canvas environment, bypassing login redirect.");
+                localStorage.setItem('logado', 'true');
+            }
+        }
+
+        function logout() {
+            localStorage.removeItem('logado');
+            if (typeof __app_id === 'undefined') {
+                window.location.href = 'login.html';
+            } else {
+                console.log("Running in Canvas environment, logout simulated.");
+            }
+        }
+
+        // --- FUNCIONALIDADE DE DROPDOWN MENUS ---
+        function toggleDropdown(id, event) {
+            event.preventDefault();
+            event.stopPropagation(); // Impede que o clique se propague para o document e feche imediatamente
+
+            const menu = document.getElementById(id);
+            const isVisible = menu.style.display === 'flex'; // Verifica se já está visível
+
+            // Fecha todos os outros dropdowns
+            document.querySelectorAll('.dropdown-content').forEach(m => {
+                if (m !== menu) { // Evita fechar o próprio menu que está sendo alternado
+                    m.style.display = 'none';
+                    if (m.previousElementSibling) {
+                        m.previousElementSibling.setAttribute('aria-expanded', 'false');
+                    }
+                    m.classList.remove('animate-fade-in'); // Remove a classe de animação ao fechar
+                }
+            });
+
+            // Alterna a visibilidade do menu clicado
+            if (!isVisible) {
+                menu.style.display = 'flex';
+                menu.style.flexDirection = 'column'; // Garante que os itens fiquem em coluna
+                menu.classList.add('animate-fade-in'); // Adiciona a animação ao abrir
+                if (menu.previousElementSibling) {
+                    menu.previousElementSibling.setAttribute('aria-expanded', 'true');
+                }
+            } else {
+                menu.style.display = 'none';
+                menu.classList.remove('animate-fade-in'); // Remove a animação ao fechar
+                if (menu.previousElementSibling) {
+                    menu.previousElementSibling.setAttribute('aria-expanded', 'false');
+                }
+            }
+        }
+
+        // Fecha dropdowns ao clicar fora
+        document.addEventListener('click', (event) => {
+            const isClickInsideDropdown = event.target.closest('.dropdown');
+            if (!isClickInsideDropdown) {
+                document.querySelectorAll('.dropdown-content').forEach(menu => {
+                    if (menu.style.display === 'flex') {
+                        menu.style.display = 'none';
+                        menu.classList.remove('animate-fade-in');
+                        if (menu.previousElementSibling) {
+                            menu.previousElementSibling.setAttribute('aria-expanded', 'false');
+                        }
+                    }
+                });
+            }
+        });
+
+        // Função para ativar o item de menu correto
+        function activateMenuItem() {
+            const currentPath = window.location.pathname.split('/').pop();
+
+            document.querySelectorAll('.menu-link, .dropdown-item').forEach(item => {
+                item.classList.remove('active-menu');
+
+                const itemHref = item.getAttribute('href');
+
+                if (itemHref && itemHref.endsWith(currentPath)) {
+                    item.classList.add('active-menu');
+
+                    let parentDropdown = item.closest('.dropdown');
+                    if (parentDropdown) {
+                        let dropdownButton = parentDropdown.querySelector('.menu-link');
+                        if (dropdownButton) {
+                            dropdownButton.classList.add('active-menu');
+                        }
+                    }
+                }
+            });
+        }
+
+        // Chama a função quando a página é carregada
+        document.addEventListener('DOMContentLoaded', activateMenuItem);
+
+        // Adiciona o evento de clique para que, ao navegar, a classe 'active-menu' seja aplicada imediatamente
+        document.querySelectorAll('.menu-link, .dropdown-item').forEach(item => {
+            item.addEventListener('click', function() {
+                document.querySelectorAll('.menu-link, .dropdown-item').forEach(i => i.classList.remove('active-menu'));
+                this.classList.add('active-menu');
+
+                let parentDropdown = this.closest('.dropdown');
+                if (parentDropdown) {
+                    let dropdownButton = parentDropdown.querySelector('.menu-link');
+                    if (dropdownButton) {
+                        dropdownButton.classList.add('active-menu');
+                    }
+                }
+            });
+        });
+    </script>
+</head>
+<body class="bg-gray-100 overflow-x-hidden">
+
+<header class="bg-blue-800 text-white p-4 flex flex-col md:flex-row items-center justify-between shadow-lg sticky top-0 z-50 rounded-b-xl">
+    <div class="font-extrabold text-3xl tracking-wider select-none mb-4 md:mb-0" tabindex="0">
+        <span class="text-white">EFM</span><span class="text-yellow-400"> FROTAS</span>
+    </div>
+
+    <nav class="flex flex-wrap gap-x-4 gap-y-2 items-center justify-center" role="navigation" aria-label="Menu principal">
+
+        <a href="dashboard.html" class="menu-link text-white font-semibold text-base py-2 px-2 relative whitespace-nowrap border-b-4 border-transparent hover:text-yellow-300 hover:border-yellow-300 transition">
+            Dashboard
+        </a>
+
+        <div class="relative dropdown">
+            <button onclick="toggleDropdown('menu-configuracoes', event)" class="menu-link text-white font-semibold text-base py-2 px-2 hover:text-yellow-300 hover:border-yellow-300 border-b-4 border-transparent transition">
+                Configurações <i class="ph ph-caret-down ml-1"></i>
+            </button>
+            <div id="menu-configuracoes" class="dropdown-content hidden absolute top-12 left-0 bg-white rounded-xl shadow-xl min-w-[220px] flex-col z-[9999] overflow-hidden">
+                <a href="cadastroveiculos.html" class="dropdown-item">Cadastro de Veículos</a>
+                <a href="cadastro_marcas.html" class="dropdown-item">Cadastro de Marcas</a>
+            </div>
+        </div>
+
+        <div class="relative dropdown">
+            <button onclick="toggleDropdown('menu-plano', event)" class="menu-link text-white font-semibold text-base py-2 px-2 hover:text-yellow-300 hover:border-yellow-300 border-b-4 border-transparent transition">
+                Plano de Manutenção <i class="ph ph-caret-down ml-1"></i>
+            </button>
+            <div id="menu-plano" class="dropdown-content hidden absolute top-12 left-0 bg-white rounded-xl shadow-xl min-w-[220px] flex-col z-[9999] overflow-hidden">
+                <a href="PMP.html" class="dropdown-item">PMP - Preventiva</a>
+                <a href="PL.html" class="dropdown-item">PL - Lubrificação</a>
+            </div>
+        </div>
+
+        <div class="relative dropdown">
+            <button onclick="toggleDropdown('menu-os', event)" class="menu-link text-white font-semibold text-base py-2 px-2 hover:text-yellow-300 hover:border-yellow-300 border-b-4 border-transparent transition">
+                Ordem de Serviço <i class="ph ph-caret-down ml-1"></i>
+            </button>
+            <div id="menu-os" class="dropdown-content hidden absolute top-12 left-0 bg-white rounded-xl shadow-xl min-w-[220px] flex-col z-[9999] overflow-hidden">
+                <a href="agendamento.html" class="dropdown-item">Gerar Ordem de Serviço</a>
+            </div>
+        </div>
+
+        <div class="relative dropdown">
+            <button onclick="toggleDropdown('menu-gerenciamento', event)" class="menu-link text-white font-semibold text-base py-2 px-2 hover:text-yellow-300 hover:border-yellow-300 border-b-4 border-transparent transition">
+                Gerenciamento <i class="ph ph-caret-down ml-1"></i>
+            </button>
+            <div id="menu-gerenciamento" class="dropdown-content hidden absolute top-12 left-0 bg-white rounded-xl shadow-xl min-w-[220px] flex-col z-[9999] overflow-hidden">
+                <a href="controle.html" class="dropdown-item">Controle</a>
+                <a href="index.html" class="dropdown-item">Visão Geral de Frota</a>
+            </div>
+        </div>
+
+        <a href="seguranca.html" class="menu-link text-white font-semibold text-base py-2 px-2 hover:text-yellow-300 hover:border-yellow-300 border-b-4 border-transparent transition">
+            Segurança
+        </a>
+
+        <a href="#" onclick="logout()" class="menu-link text-white font-semibold text-base py-2 px-2 hover:text-yellow-300 hover:border-yellow-300 border-b-4 border-transparent transition">
+            Sair
+        </a>
+    </nav>
+</header>
+    
+<main class="max-w-7xl mx-auto my-12 px-4 md:px-6">
+    <h1 class="font-extrabold text-5xl mb-10 text-center text-blue-900 tracking-wide select-none">Cadastro de Marcas</h1>
+    
+    <section class="bg-white p-6 md:p-8 rounded-3xl shadow-lg mb-12" aria-label="Formulário de Cadastro de Marcas">
+        <h2 class="text-2xl font-bold text-blue-900 mb-6">Adicionar Nova Marca</h2>
+        <form id="brandForm" class="grid grid-cols-1 gap-6">
+            
+            <div>
+                <label for="nomeMarca" class="block font-semibold mb-2 text-gray-700">Nome da Marca:</label>
+                <input type="text" id="nomeMarca" placeholder="Ex: Mercedes-Benz, Scania, Komatsu" required class="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-blue-500" />
+            </div>
+            
+            <div class="flex justify-center mt-6">
+                <button type="submit" class="bg-blue-800 text-white font-bold text-lg py-3 px-8 rounded-lg hover:bg-blue-700 transition-colors duration-300 shadow-md">
+                    Cadastrar Marca
+                </button>
+            </div>
+        </form>
+    </section>
+
+    <section class="bg-white p-6 md:p-8 rounded-3xl shadow-lg" aria-label="Tabela de Marcas Cadastradas">
+        <h2 class="text-2xl font-bold text-blue-900 mb-6">Marcas Cadastradas</h2>
+        <div class="overflow-x-auto rounded-lg">
+            <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-gray-50">
+                    <tr>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nome da Marca</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Ações</th>
+                    </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-gray-200" id="brandsTableBody">
+                    </tbody>
+            </table>
+        </div>
+    </section>
+
+    <div id="userFeedback" class="hidden"></div>
+
+    <div id="editBrandModal" class="fixed inset-0 bg-gray-800 bg-opacity-60 hidden items-center justify-center z-[1000] p-4">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-xl max-h-[90vh] flex flex-col" role="dialog" aria-modal="true" aria-labelledby="editBrandModalTitle">
+            <div class="flex justify-between items-center p-5 border-b border-gray-200">
+                <h3 id="editBrandModalTitle" class="text-2xl font-bold text-blue-900">Editar Marca</h3>
+                <button onclick="closeEditBrandModal()" class="text-gray-400 hover:text-red-600 transition-colors p-1 rounded-full" aria-label="Fechar modal">
+                    <i class="ph ph-x-circle text-3xl"></i>
+                </button>
+            </div>
+            <div class="overflow-y-auto p-8">
+                <form id="editBrandForm">
+                    <div class="grid grid-cols-1 gap-6">
+                        <div>
+                            <label for="edit-nomeMarca" class="block font-semibold mb-2">Nome da Marca:</label>
+                            <input type="text" id="edit-nomeMarca" required class="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-blue-500" />
+                        </div>
+                    </div>
+                    <div class="flex justify-end items-center gap-4 mt-8 pt-5 border-t border-gray-200">
+                        <button type="button" onclick="closeEditBrandModal()" class="bg-gray-200 text-gray-800 font-bold py-2 px-6 rounded-lg hover:bg-gray-300 transition-colors">Cancelar</button>
+                        <button type="submit" class="bg-blue-800 text-white font-bold py-2 px-6 rounded-lg hover:bg-blue-700 transition-colors">Salvar Alterações</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div id="confirmModal" class="fixed inset-0 bg-gray-800 bg-opacity-60 hidden items-center justify-center z-[1000] p-4">
+        <div class="bg-white rounded-lg shadow-xl p-6 w-full max-w-sm">
+            <h3 id="confirmModalTitle" class="text-xl font-bold text-gray-800 mb-4">Confirmar Ação</h3>
+            <p id="confirmModalMessage" class="text-gray-600 mb-6">Você tem certeza?</p>
+            <div class="flex justify-end gap-4">
+                <button id="confirmModalNo" class="bg-gray-200 text-gray-800 font-bold py-2 px-4 rounded-lg">Não</button>
+                <button id="confirmModalYes" class="bg-red-600 text-white font-bold py-2 px-4 rounded-lg">Sim, Excluir</button>
+            </div>
+        </div>
+    </div>
+
+</main>
+
+<script>
+    // Variáveis globais para marcas
+    let brands = [];
+    let editingBrandId = null; // Armazena o ID da marca sendo editada
+    let brandToDeleteId = null; // Armazena o ID da marca a ser excluída
+
+    // --- Funções de Utilitários ---
+
+    function generateUniqueBrandId() {
+        return brands.length > 0 ? Math.max(...brands.map(b => b.id)) + 1 : 1;
+    }
+
+    function saveBrands() {
+        localStorage.setItem('brands', JSON.stringify(brands));
+    }
+
+    function loadBrands() {
+        const storedBrands = localStorage.getItem('brands');
+        if (storedBrands) {
+            brands = JSON.parse(storedBrands);
+            renderBrandsTable();
+        }
+    }
+
+    function showUserFeedback(message, isSuccess = true) {
+        const feedbackDiv = document.getElementById('userFeedback');
+        feedbackDiv.textContent = message;
+        feedbackDiv.className = `fixed top-20 right-4 px-4 py-2 rounded-lg shadow-lg z-[1001] animate-fade-in ${isSuccess ? 'bg-green-500 text-white' : 'bg-red-500 text-white'}`;
+        feedbackDiv.classList.remove('hidden');
+
+        setTimeout(() => {
+            feedbackDiv.classList.add('hidden');
+            feedbackDiv.classList.remove('animate-fade-in');
+        }, 3000);
+    }
+
+    // --- Funções da Tabela e Formulário de Marcas ---
+
+    function renderBrandsTable() {
+        const tableBody = document.getElementById('brandsTableBody');
+        tableBody.innerHTML = ''; // Limpa o corpo da tabela antes de renderizar
+
+        brands.forEach(brand => {
+            const row = tableBody.insertRow();
+            row.className = 'hover:bg-gray-50 transition-colors duration-150 text-sm text-gray-700';
+
+            row.insertCell().textContent = brand.id;
+            row.insertCell().textContent = brand.name; // CORRIGIDO: de nomeMarca para name
+
+            const actionsCell = row.insertCell();
+            actionsCell.className = 'flex items-center space-x-2';
+
+            const editButton = document.createElement('button');
+            editButton.innerHTML = '<i class="ph ph-pencil-simple text-blue-600 text-xl hover:text-blue-800"></i>';
+            editButton.title = `Editar ${brand.name}`; // CORRIGIDO: de nomeMarca para name
+            editButton.onclick = () => openEditBrandModal(brand.id);
+            actionsCell.appendChild(editButton);
+
+            const deleteButton = document.createElement('button');
+            deleteButton.innerHTML = '<i class="ph ph-trash text-red-600 text-xl hover:text-red-800"></i>';
+            deleteButton.title = `Excluir ${brand.name}`; // CORRIGIDO: de nomeMarca para name
+            deleteButton.onclick = () => confirmDeleteBrand(brand.id, brand.name); // CORRIGIDO: de nomeMarca para name
+            actionsCell.appendChild(deleteButton);
+        });
+    }
+
+    document.getElementById('brandForm').addEventListener('submit', function(event) {
+        event.preventDefault();
+
+        const brandName = document.getElementById('nomeMarca').value.trim();
+        
+        if (brandName === '') {
+            showUserFeedback('O nome da marca é obrigatório!', false);
+            return;
+        }
+
+        const newBrand = {
+            id: generateUniqueBrandId(),
+            name: brandName // CORRIGIDO: de nomeMarca para name
+        };
+
+        brands.push(newBrand);
+        saveBrands();
+        renderBrandsTable();
+        showUserFeedback('Marca cadastrada com sucesso!');
+        this.reset(); // Limpa o formulário
+    });
+
+    // --- Funções do Modal de Edição de Marca ---
+
+    function openEditBrandModal(brandId) {
+        editingBrandId = brandId;
+        const brand = brands.find(b => b.id === brandId);
+
+        if (brand) {
+            document.getElementById('edit-nomeMarca').value = brand.name; // CORRIGIDO: de nomeMarca para name
+            document.getElementById('editBrandModal').classList.remove('hidden');
+            document.getElementById('editBrandModal').classList.add('flex');
+        }
+    }
+
+    function closeEditBrandModal() {
+        document.getElementById('editBrandModal').classList.add('hidden');
+        document.getElementById('editBrandModal').classList.remove('flex');
+        editingBrandId = null;
+    }
+
+    document.getElementById('editBrandForm').addEventListener('submit', function(event) {
+        event.preventDefault();
+
+        const updatedBrandName = document.getElementById('edit-nomeMarca').value.trim();
+        
+        if (updatedBrandName === '') {
+            showUserFeedback('O nome da marca é obrigatório!', false);
+            return;
+        }
+
+        const brandIndex = brands.findIndex(b => b.id === editingBrandId);
+        if (brandIndex !== -1) {
+            brands[brandIndex].name = updatedBrandName; // CORRIGIDO: de nomeMarca para name
+            saveBrands();
+            renderBrandsTable();
+            showUserFeedback('Marca atualizada com sucesso!');
+            closeEditBrandModal();
+        } else {
+            showUserFeedback('Erro ao atualizar marca: Marca não encontrada.', false);
+        }
+    });
+
+    // --- Funções do Modal de Confirmação de Exclusão ---
+
+    function confirmDeleteBrand(brandId, brandName) {
+        brandToDeleteId = brandId;
+        document.getElementById('confirmModalTitle').textContent = 'Confirmar Exclusão';
+        document.getElementById('confirmModalMessage').innerHTML = `Tem certeza que deseja excluir a marca <strong>${brandName}</strong>? Esta ação é irreversível.`;
+        document.getElementById('confirmModalYes').textContent = 'Sim, Excluir';
+        document.getElementById('confirmModalYes').onclick = deleteBrand;
+        document.getElementById('confirmModal').classList.remove('hidden');
+        document.getElementById('confirmModal').classList.add('flex');
+    }
+
+    document.getElementById('confirmModalNo').addEventListener('click', () => {
+        document.getElementById('confirmModal').classList.add('hidden');
+        document.getElementById('confirmModal').classList.remove('flex');
+        brandToDeleteId = null;
+    });
+
+    function deleteBrand() {
+        if (brandToDeleteId !== null) {
+            brands = brands.filter(b => b.id !== brandToDeleteId);
+            saveBrands();
+            renderBrandsTable();
+            showUserFeedback('Marca excluída com sucesso!');
+            document.getElementById('confirmModal').classList.add('hidden');
+            document.getElementById('confirmModal').classList.remove('flex');
+            brandToDeleteId = null;
+        }
+    }
+
+    // Carrega as marcas ao iniciar a página
+    document.addEventListener('DOMContentLoaded', loadBrands);
+
+</script>
+</body>
+</html>

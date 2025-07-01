@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Administração - EFM Frotas</title>
+  <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;600;700&display=swap" rel="stylesheet" />
+  <script src="https://unpkg.com/@phosphor-icons/web"></script>
+  <link rel="stylesheet" href="css/admin.css">
+
+</head>
+<body>
+
+  <header>
+    <h1>Administração - EFM Frotas</h1>
+    <button id="btnLogout" title="Sair da área administrativa">
+      <i class="ph ph-sign-out"></i> Logout
+    </button>
+  </header>
+
+  <section class="resumo">
+    <div class="card">
+      <h2>Total de Usuários</h2>
+      <p id="totalUsuarios">0</p>
+    </div>
+    <div class="card">
+      <h2>Administradores</h2>
+      <p id="totalAdmins">0</p>
+    </div>
+    <div class="card">
+      <h2>Usuários Comuns</h2>
+      <p id="totalUsers">0</p>
+    </div>
+  </section>
+
+  <section class="controls" aria-label="Filtros e cadastro de usuários">
+    <input type="text" id="filtroUsuario" placeholder="Buscar usuário..." aria-label="Buscar usuário" />
+    
+    <input type="text" id="novoUsuario" placeholder="Novo usuário" aria-label="Novo usuário" />
+    <input type="password" id="novaSenha" placeholder="Senha" aria-label="Senha do novo usuário" />
+    <select id="novoTipo" aria-label="Tipo do novo usuário">
+      <option value="user" selected>Usuário</option>
+      <option value="admin">Administrador</option>
+    </select>
+    <button id="btnAdicionar" title="Adicionar novo usuário">
+      <i class="ph ph-user-plus"></i> Adicionar
+    </button>
+  </section>
+
+  <div id="mensagem" role="alert" aria-live="polite"></div>
+
+  <table aria-label="Tabela de usuários cadastrados">
+    <thead>
+      <tr>
+        <th>Usuário</th>
+        <th>Tipo</th>
+        <th>Ações</th>
+      </tr>
+    </thead>
+    <tbody id="tabelaUsuarios">
+      <!-- Preenchido via JS -->
+    </tbody>
+  </table>
+
+  <!-- Modal Editar Usuário -->
+  <div class="modal-overlay" id="modalEditar" role="dialog" aria-modal="true" aria-labelledby="modalTitle" tabindex="-1">
+    <div class="modal">
+      <h3 id="modalTitle">Editar Usuário</h3>
+      <label for="editTipo">Tipo de Usuário:</label>
+      <select id="editTipo">
+        <option value="user">Usuário</option>
+        <option value="admin">Administrador</option>
+      </select>
+      <label for="editSenha">Senha:</label>
+      <input type="password" id="editSenha" placeholder="Nova senha" />
+      <div class="modal-buttons">
+        <button class="btn-cancelar" id="btnCancelar">Cancelar</button>
+        <button class="btn-salvar" id="btnSalvar">Salvar</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/admin.js"defer></script>
+</body>
+</html>

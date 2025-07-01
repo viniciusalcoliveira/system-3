@@ -1,0 +1,607 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>PMP - Plano de Manutenção Preventiva - EFM Frotas</title>
+    <!-- Google Fonts: Poppins for modern typography -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <!-- Tailwind CSS CDN for utility-first styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Phosphor Icons for modern and clean iconography -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f0f4f8; /* Light background for a clean look */
+            color: #2c3e50; /* Darker text for readability */
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased; /* Smoother font rendering */
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        /* Custom animation for dropdown fade-in */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scaleY(0.9) translateY(-10px); }
+            to { opacity: 1; transform: scaleY(1) translateY(0); }
+        }
+        .animate-fade-in {
+            animation: fadeIn 0.3s ease-out forwards;
+            transform-origin: top;
+        }
+
+        /* Custom scrollbar styling for a consistent look */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background-color: rgba(11, 61, 145, 0.6); /* Semi-transparent primary blue */
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-track {
+            background: rgba(11, 61, 145, 0.1); /* Lighter track */
+        }
+
+        /* Specific styles for collapsibles */
+        .collapsible-header {
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1rem 1.5rem;
+            background-color: #e0e7ff; /* Light blue for headers */
+            border-bottom: 1px solid #c2c9d6;
+            font-weight: 600;
+            color: #2c3e50;
+            transition: background-color 0.3s ease;
+            border-radius: 0.75rem 0.75rem 0 0; /* Rounded top corners */
+        }
+        .collapsible-header:hover {
+            background-color: #c7d2fe; /* Lighter blue on hover */
+        }
+        .collapsible-content {
+            padding: 1rem 1.5rem;
+            background-color: #ffffff;
+            border-left: 1px solid #e2e8f0;
+            border-right: 1px solid #e2e8f0;
+            border-bottom: 1px solid #e2e8f0;
+            border-radius: 0 0 0.75rem 0.75rem; /* Rounded bottom corners */
+            overflow: hidden;
+            max-height: 0;
+            transition: max-height 0.5s ease-out, padding 0.5s ease-out;
+        }
+        .collapsible-content.active {
+            max-height: 1000px; /* Increased max-height to ensure content fits */
+            padding-bottom: 1.5rem;
+        }
+        .collapsible-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.75rem 0;
+            border-bottom: 1px dashed #e2e8f0;
+            flex-wrap: wrap; /* Allow items to wrap on smaller screens */
+        }
+        .collapsible-item:last-child {
+            border-bottom: none;
+        }
+        .collapsible-item-name {
+            font-weight: 500;
+            color: #334155;
+            flex: 1; /* Allow name to take available space */
+            min-width: 30%; /* Ensure name takes at least 30% width */
+        }
+        .collapsible-item-desc {
+            color: #64748b;
+            text-align: right;
+            flex: 2; /* Allow description to take more space */
+            min-width: 60%; /* Ensure description takes at least 60% width */
+        }
+        .arrow-icon {
+            transition: transform 0.3s ease;
+        }
+        .collapsible-header.active .arrow-icon {
+            transform: rotate(180deg);
+        }
+        .important-note {
+            background-color: #fffbeb;
+            border-left: 4px solid #f59e0b;
+            padding: 1rem;
+            margin-top: 1.5rem;
+            border-radius: 0.5rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        .important-note ul {
+            list-style: disc;
+            margin-left: 1.5rem;
+        }
+        .important-note li {
+            margin-bottom: 0.5rem;
+        }
+    </style>
+</head>
+<body class="overflow-x-hidden">
+
+ <header class="bg-blue-800 text-white p-4 flex flex-col md:flex-row items-center justify-between shadow-lg sticky top-0 z-50 rounded-b-xl">
+    <div class="font-extrabold text-3xl tracking-wider select-none mb-4 md:mb-0" tabindex="0">
+        <span class="text-white">EFM</span><span class="text-yellow-400"> FROTAS</span>
+    </div>
+
+    <nav class="flex flex-wrap gap-x-4 gap-y-2 items-center justify-center" role="navigation" aria-label="Menu principal">
+
+        <a href="dashboard.html" class="menu-link text-white font-semibold text-base py-2 px-2 relative whitespace-nowrap border-b-4 border-transparent hover:text-yellow-300 hover:border-yellow-300 transition">
+            Dashboard
+        </a>
+
+        <div class="relative dropdown">
+            <button onclick="toggleDropdown('menu-configuracoes', event)" class="menu-link text-white font-semibold text-base py-2 px-2 hover:text-yellow-300 hover:border-yellow-300 border-b-4 border-transparent transition">
+                Configurações <i class="ph ph-caret-down ml-1"></i>
+            </button>
+            <div id="menu-configuracoes" class="dropdown-content hidden absolute top-12 left-0 bg-white rounded-xl shadow-xl min-w-[220px] flex-col z-[9999] overflow-hidden">
+                <a href="CadastroVeiculos.html" class="dropdown-item">Cadastro de Veículos</a>
+                <a href="" class="dropdown-item">Cadastro de Marcas</a>
+
+            </div>
+        </div>
+
+        <div class="relative dropdown">
+            <button onclick="toggleDropdown('menu-plano', event)" class="menu-link text-white font-semibold text-base py-2 px-2 hover:text-yellow-300 hover:border-yellow-300 border-b-4 border-transparent transition">
+                Plano de Manutenção <i class="ph ph-caret-down ml-1"></i>
+            </button>
+            <div id="menu-plano" class="dropdown-content hidden absolute top-12 left-0 bg-white rounded-xl shadow-xl min-w-[220px] flex-col z-[9999] overflow-hidden">
+                <a href="PMP.html" class="dropdown-item">PMP - Preventiva</a>
+                <a href="PL.html" class="dropdown-item">PL - Lubrificação</a>
+            </div>
+        </div>
+
+        <div class="relative dropdown">
+            <button onclick="toggleDropdown('menu-os', event)" class="menu-link text-white font-semibold text-base py-2 px-2 hover:text-yellow-300 hover:border-yellow-300 border-b-4 border-transparent transition">
+                Ordem de Serviço <i class="ph ph-caret-down ml-1"></i>
+            </button>
+            <div id="menu-os" class="dropdown-content hidden absolute top-12 left-0 bg-white rounded-xl shadow-xl min-w-[220px] flex-col z-[9999] overflow-hidden">
+                <a href="agendamento.html" class="dropdown-item">Gerar Ordem de Serviço</a>
+            </div>
+        </div>
+
+        <div class="relative dropdown">
+            <button onclick="toggleDropdown('menu-gerenciamento', event)" class="menu-link text-white font-semibold text-base py-2 px-2 hover:text-yellow-300 hover:border-yellow-300 border-b-4 border-transparent transition">
+                Gerenciamento <i class="ph ph-caret-down ml-1"></i>
+            </button>
+            <div id="menu-gerenciamento" class="dropdown-content hidden absolute top-12 left-0 bg-white rounded-xl shadow-xl min-w-[220px] flex-col z-[9999] overflow-hidden">
+                <a href="controle.html" class="dropdown-item">Controle</a>
+                <a href="index.html" class="dropdown-item">Visão Geral de Frota</a>
+            </div>
+        </div>
+
+        <a href="seguranca.html" class="menu-link text-white font-semibold text-base py-2 px-2 hover:text-yellow-300 hover:border-yellow-300 border-b-4 border-transparent transition">
+            Segurança
+        </a>
+
+        <a href="#" onclick="logout()" class="menu-link text-white font-semibold text-base py-2 px-2 hover:text-yellow-300 hover:border-yellow-300 border-b-4 border-transparent transition">
+            Sair
+        </a>
+    </nav>
+</header>
+
+<style>
+    .active-menu {
+        color: #facc15 !important; /* yellow-300 */
+        border-bottom: 4px solid #facc15 !important; /* yellow-300 */
+    }
+
+    .dropdown-item {
+        padding: 0.75rem 1.5rem;
+        color: #374151; /* gray-700 */
+        font-weight: 500;
+        white-space: nowrap;
+    }
+
+    .dropdown-item:hover {
+        background-color: #eff6ff; /* blue-50 */
+        color: #1e40af; /* blue-800 */
+    }
+</style>
+
+<script>
+    function toggleDropdown(menuId, event) {
+        event.stopPropagation();
+        document.querySelectorAll('.dropdown-content').forEach(menu => menu.classList.add('hidden'));
+        document.getElementById(menuId).classList.toggle('hidden');
+    }
+
+    document.addEventListener('click', function() {
+        document.querySelectorAll('.dropdown-content').forEach(menu => menu.classList.add('hidden'));
+    });
+
+    // Função para ativar o item de menu correto
+    function activateMenuItem() {
+        const currentPath = window.location.pathname.split('/').pop(); // Pega o nome do arquivo da URL (ex: "dashboard.html")
+
+        document.querySelectorAll('.menu-link, .dropdown-item').forEach(item => {
+            // Remove a classe 'active-menu' de todos os itens primeiro
+            item.classList.remove('active-menu');
+
+            // Pega o href do item
+            const itemHref = item.getAttribute('href');
+
+            // Verifica se o href existe e se o caminho atual corresponde ao href
+            if (itemHref && itemHref.endsWith(currentPath)) {
+                item.classList.add('active-menu');
+
+                // Se o item ativo for um dropdown-item, também queremos "ativar" o botão pai do dropdown
+                let parentDropdown = item.closest('.dropdown');
+                if (parentDropdown) {
+                    let dropdownButton = parentDropdown.querySelector('.menu-link');
+                    if (dropdownButton) {
+                        dropdownButton.classList.add('active-menu');
+                    }
+                }
+            }
+        });
+    }
+
+    // Chama a função quando a página é carregada
+    document.addEventListener('DOMContentLoaded', activateMenuItem);
+
+    // Adiciona o evento de clique para que, ao navegar, a classe 'active-menu' seja aplicada imediatamente
+    document.querySelectorAll('.menu-link, .dropdown-item').forEach(item => {
+        item.addEventListener('click', function() {
+            // Remove a classe 'active-menu' de todos os itens ao clicar em um novo item
+            document.querySelectorAll('.menu-link, .dropdown-item').forEach(i => i.classList.remove('active-menu'));
+            // Adiciona a classe 'active-menu' ao item clicado
+            this.classList.add('active-menu');
+
+            // Se o item clicado for um dropdown-item, ativa também o botão pai do dropdown
+            let parentDropdown = this.closest('.dropdown');
+            if (parentDropdown) {
+                let dropdownButton = parentDropdown.querySelector('.menu-link');
+                if (dropdownButton) {
+                    dropdownButton.classList.add('active-menu');
+                }
+            }
+        });
+    });
+// terminando header
+</script>
+
+    <main class="max-w-7xl mx-auto my-12 px-4 md:px-6 flex-grow">
+        <h1 class="font-extrabold text-5xl mb-10 text-center text-blue-900 tracking-wide select-none">Plano de Manutenção Preventiva (PMP)</h1>
+        <p class="text-lg text-gray-700 mb-8 text-center">Selecione o plano de manutenção preventiva desejado para visualizar seus detalhes.</p>
+
+        <nav class="flex border-b border-gray-200 mb-8" aria-label="Abas de Manutenção">
+            <a href="PlanoManutenção.html" class="py-3 px-6 text-lg font-medium text-gray-600 hover:text-blue-800 hover:border-b-4 hover:border-blue-300 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors duration-300 rounded-t-lg">Voltar para Planos</a>
+            <a href="pmp.html" class="py-3 px-6 text-lg font-medium text-blue-800 border-b-4 border-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors duration-300 rounded-t-lg">PMP - Plano de Manutenção Preventiva</a>
+        </nav>
+
+        <section class="bg-white p-6 md:p-8 rounded-3xl shadow-lg mb-12" aria-label="Seleção de Plano de Manutenção Preventiva">
+            <h2 class="text-2xl font-bold text-blue-900 mb-6 flex items-center">
+                <i class="ph ph-list text-blue-600 text-3xl mr-3"></i> Criar Meu PLano de Manutenção Preventiva
+            </h2>
+            <div class="mb-6">
+                <label for="selectPMPPlan" class="block font-semibold mb-2 text-gray-700 text-lg">Criar Meu Plano:</label>
+                <select id="selectPMPPlan" class="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 text-lg">
+                    <option value="">-- Criar Meu Plano de Manutenção Preventiva --</option>
+                    <option value="pmp_caminhao">Sim</option>
+                    <option value="pmp_maquina">Não</option>
+                    <!-- Adicione mais opções de planos aqui -->
+                </select>
+            </div>
+ <div class="mb-6">
+                <label for="selectPlan" class="block font-semibold mb-2 text-gray-700 text-lg">Selecione Meus Planos de Manunteção Preventiva:</label>
+                <select id="selectPlan" class="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 text-lg">
+                    <option value="">--Selecione Meus Planos-</option>
+                    <option value="pl2000h_scania">Máquina Escavadeira - PMP 4000H</option>
+                    <option value="pl500h_escavadeira">Zulaine - PMP 2000H</option>
+                    <!-- Adicione mais opções de planos aqui -->
+                </select>
+            </div>
+            <!-- Conteúdo dinâmico do plano de manutenção preventiva será carregado aqui -->
+            <div id="pmpPlanContent" class="space-y-4">
+                <!-- Conteúdo do PMP para Caminhão Basculante - PMP Geral -->
+                <div id="pmp_caminhao_content" class="hidden">
+                    <h3 class="text-xl font-bold text-blue-800 mb-4">Equipamento: Caminhão Basculante - PMP Geral</h3>
+                    
+                    <!-- COMPONENTE: MOTOR -->
+                    <div class="collapsible-group">
+                        <div class="collapsible-header rounded-xl" tabindex="0" role="button" aria-expanded="false" onclick="toggleCollapsible(this)">
+                            COMPONENTE: MOTOR
+                            <i class="ph ph-caret-down arrow-icon text-2xl"></i>
+                        </div>
+                        <div class="collapsible-content">
+                            <div class="collapsible-item">
+                                <span class="collapsible-item-name">INSPEÇÃO VISUAL</span>
+                                <span class="collapsible-item-desc">Verificar nível de água, limpeza, fixação e condição do tanque de expansão, mangueiras, abraçadeiras e defletores.</span>
+                            </div>
+                            <div class="collapsible-item">
+                                <span class="collapsible-item-name">BOMBA D'ÁGUA E POLIAS</span>
+                                <span class="collapsible-item-desc">Verificar estado das pás e fixação dos protetores.</span>
+                            </div>
+                            <div class="collapsible-item">
+                                <span class="collapsible-item-name">CORREIAS E TENSORES</span>
+                                <span class="collapsible-item-desc">Verificar e ajustar se necessário.</span>
+                            </div>
+                            <div class="collapsible-item">
+                                <span class="collapsible-item-name">SISTEMA DE ADMISSÃO</span>
+                                <span class="collapsible-item-desc">Verificar funcionamento do indicador de restrição, estado das mangueiras, abraçadeiras e válvulas.</span>
+                            </div>
+                            <div class="collapsible-item">
+                                <span class="collapsible-item-name">SISTEMA DE COMBUSTÍVEL</span>
+                                <span class="collapsible-item-desc">Verificar vazamentos, fixação do tanque, estado da bomba e mangueiras de retorno.</span>
+                            </div>
+                            <div class="collapsible-item">
+                                <span class="collapsible-item-name">CONTROLES DO ACIONAMENTO</span>
+                                <span class="collapsible-item-desc">Verificar funcionamento e parada do motor, estado do pedal.</span>
+                            </div>
+                            <div class="collapsible-item">
+                                <span class="collapsible-item-name">ARTICULAÇÕES E CABOS</span>
+                                <span class="collapsible-item-desc">Verificar a lubrificação, estado e fixação do coletor, tubagens, silencioso, braçadeiras e coxins.</span>
+                            </div>
+                            <div class="collapsible-item">
+                                <span class="collapsible-item-name">SISTEMA DE LUBRIFICAÇÃO</span>
+                                <span class="collapsible-item-desc">Verificar pressão e vazamentos.</span>
+                            </div>
+                            <div class="collapsible-item">
+                                <span class="collapsible-item-name">EMBREAGEM</span>
+                                <span class="collapsible-item-desc">Verificar o acionamento.</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- COMPONENTE: CAIXA DE MARCHAS -->
+                    <div class="collapsible-group">
+                        <div class="collapsible-header rounded-xl" tabindex="0" role="button" aria-expanded="false" onclick="toggleCollapsible(this)">
+                            COMPONENTE: CAIXA DE MARCHAS
+                            <i class="ph ph-caret-down arrow-icon text-2xl"></i>
+                        </div>
+                        <div class="collapsible-content">
+                            <div class="collapsible-item">
+                                <span class="collapsible-item-name">INSPEÇÃO GERAL</span>
+                                <span class="collapsible-item-desc">Verificar vazamentos, engate e vazamentos.</span>
+                            </div>
+                            <div class="collapsible-item">
+                                <span class="collapsible-item-name">ALAVANCA E ARTICULAÇÃO</span>
+                                <span class="collapsible-item-desc">Verificar controle e folgas.</span>
+                            </div>
+                            <div class="collapsible-item">
+                                <span class="collapsible-item-name">CARCAÇA DA CAIXA DE MARCHAS</span>
+                                <span class="collapsible-item-desc">Verificar apertos e observar estado.</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- COMPONENTE: EIXOS -->
+                    <div class="collapsible-group">
+                        <div class="collapsible-header rounded-xl" tabindex="0" role="button" aria-expanded="false" onclick="toggleCollapsible(this)">
+                            COMPONENTE: EIXOS
+                            <i class="ph ph-caret-down arrow-icon text-2xl"></i>
+                        </div>
+                        <div class="collapsible-content">
+                            <div class="collapsible-item">
+                                <span class="collapsible-item-name">EIXOS TRASEIROS</span>
+                                <span class="collapsible-item-desc">Verificar as fixações e estado dos aros e travas.</span>
+                            </div>
+                            <div class="collapsible-item">
+                                <span class="collapsible-item-name">EIXO DIANTEIRO</span>
+                                <span class="collapsible-item-desc">Verificar as fixações e estado dos aros e travas.</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- COMPONENTE: SISTEMA DE DIREÇÃO -->
+                    <div class="collapsible-group">
+                        <div class="collapsible-header rounded-xl" tabindex="0" role="button" aria-expanded="false" onclick="toggleCollapsible(this)">
+                            COMPONENTE: SISTEMA DE DIREÇÃO
+                            <i class="ph ph-caret-down arrow-icon text-2xl"></i>
+                        </div>
+                        <div class="collapsible-content">
+                            <div class="collapsible-item">
+                                <span class="collapsible-item-name">INSPEÇÃO VISUAL</span>
+                                <span class="collapsible-item-desc">Verificar colunas, barras e terminais.</span>
+                            </div>
+                            <div class="collapsible-item">
+                                <span class="collapsible-item-name">FIXAÇÕES E FOLGAS</span>
+                                <span class="collapsible-item-desc">Verificar fixações e folgas.</span>
+                            </div>
+                            <div class="collapsible-item">
+                                <span class="collapsible-item-name">BOMBA HIDRÁULICA</span>
+                                <span class="collapsible-item-desc">Verificar vazamento.</span>
+                            </div>
+                            <div class="collapsible-item">
+                                <span class="collapsible-item-name">CAIXA DE DIREÇÃO</span>
+                                <span class="collapsible-item-desc">Verificar o funcionamento e vazamento.</span>
+                            </div>
+                            <div class="collapsible-item">
+                                <span class="collapsible-item-name">MANGUEIRAS</span>
+                                <span class="collapsible-item-desc">Verificar cortes e vazamentos.</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- COMPONENTE: SISTEMA DE FREIOS -->
+                    <div class="collapsible-group">
+                        <div class="collapsible-header rounded-xl" tabindex="0" role="button" aria-expanded="false" onclick="toggleCollapsible(this)">
+                            COMPONENTE: SISTEMA DE FREIOS
+                            <i class="ph ph-caret-down arrow-icon text-2xl"></i>
+                        </div>
+                        <div class="collapsible-content">
+                            <div class="collapsible-item">
+                                <span class="collapsible-item-name">INSPEÇÃO GERAL</span>
+                                <span class="collapsible-item-desc">Verificar funcionamento.</span>
+                            </div>
+                            <div class="collapsible-item">
+                                <span class="collapsible-item-name">FREIO DE ESTACIONAMENTO</span>
+                                <span class="collapsible-item-desc">Verificar funcionamento.</span>
+                            </div>
+                            <div class="collapsible-item">
+                                <span class="collapsible-item-name">FREIO DE SERVIÇO</span>
+                                <span class="collapsible-item-desc">Verificar atuação do sistema e regulagem.</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- COMPONENTE: SISTEMA PNEUMÁTICO -->
+                    <div class="collapsible-group">
+                        <div class="collapsible-header rounded-xl" tabindex="0" role="button" aria-expanded="false" onclick="toggleCollapsible(this)">
+                            COMPONENTE: SISTEMA PNEUMÁTICO
+                            <i class="ph ph-caret-down arrow-icon text-2xl"></i>
+                        </div>
+                        <div class="collapsible-content">
+                            <div class="collapsible-item">
+                                <span class="collapsible-item-name">COMPRESSOR DE AR</span>
+                                <span class="collapsible-item-desc">Verificar vazamento.</span>
+                            </div>
+                            <div class="collapsible-item">
+                                <span class="collapsible-item-name">RESERVATÓRIOS E LINHAS DE AR</span>
+                                <span class="collapsible-item-desc">Verificar vazamento do sistema.</span>
+                            </div>
+                            <div class="collapsible-item">
+                                <span class="collapsible-item-name">CÂMARAS PNEUMÁTICAS, VÁLVULAS E CILINDROS</span>
+                                <span class="collapsible-item-desc">Verificar vazamentos.</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- COMPONENTE: CHASSI E ESTRUTURAS -->
+                    <div class="collapsible-group">
+                        <div class="collapsible-header rounded-xl" tabindex="0" role="button" aria-expanded="false" onclick="toggleCollapsible(this)">
+                            COMPONENTE: CHASSI E ESTRUTURAS
+                            <i class="ph ph-caret-down arrow-icon text-2xl"></i>
+                        </div>
+                        <div class="collapsible-content">
+                            <div class="collapsible-item">
+                                <span class="collapsible-item-name">SUSPENSÃO</span>
+                                <span class="collapsible-item-desc">Verificar folga de mola, alinhamento e fixação.</span>
+                            </div>
+                            <div class="collapsible-item">
+                                <span class="collapsible-item-name">CABINE</span>
+                                <span class="collapsible-item-desc">Verificar forrações, borrachas, tapete, vidros, fechaduras e maçanetas, fixações e dobradiças.</span>
+                            </div>
+                            <div class="collapsible-item">
+                                <span class="collapsible-item-name">CHASSI</span>
+                                <span class="collapsible-item-desc">Verificar corrosões, trincas e deformações.</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- COMPONENTE: PAINEL DE INSTRUMENTOS -->
+                    <div class="collapsible-group">
+                        <div class="collapsible-header rounded-xl" tabindex="0" role="button" aria-expanded="false" onclick="toggleCollapsible(this)">
+                            COMPONENTE: PAINEL DE INSTRUMENTOS
+                            <i class="ph ph-caret-down arrow-icon text-2xl"></i>
+                        </div>
+                        <div class="collapsible-content">
+                            <div class="collapsible-item">
+                                <span class="collapsible-item-name">INSTRUMENTOS</span>
+                                <span class="collapsible-item-desc">Verificar funcionamento dos sensores, manômetros, termômetro e indicadores.</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- COMPONENTE: SISTEMA ELÉTRICO -->
+                    <div class="collapsible-group">
+                        <div class="collapsible-header rounded-xl" tabindex="0" role="button" aria-expanded="false" onclick="toggleCollapsible(this)">
+                            COMPONENTE: SISTEMA ELÉTRICO
+                            <i class="ph ph-caret-down arrow-icon text-2xl"></i>
+                        </div>
+                        <div class="collapsible-content">
+                            <div class="collapsible-item">
+                                <span class="collapsible-item-name">MOTOR DE PARTIDA E ALTERNADOR</span>
+                                <span class="collapsible-item-desc">Verificar funcionamento e fixação.</span>
+                            </div>
+                            <div class="collapsible-item">
+                                <span class="collapsible-item-name">BATERIA</span>
+                                <span class="collapsible-item-desc">Verificar nível, cobrir bornes com vaselina e conferir densidade.</span>
+                            </div>
+                            <div class="collapsible-item">
+                                <span class="collapsible-item-name">CHAVES, INTERRUPTORES, SOLENOIDES, FUSÍVEIS, CABOS, CHICOTES E FIAÇÕES</span>
+                                <span class="collapsible-item-desc">Verificar funcionamento, fixações e isolamentos.</span>
+                            </div>
+                            <div class="collapsible-item">
+                                <span class="collapsible-item-name">ALARME DE RÉ E BUZINA</span>
+                                <span class="collapsible-item-desc">Verificar funcionamento.</span>
+                            </div>
+                            <div class="collapsible-item">
+                                <span class="collapsible-item-name">FARÓIS, LANTERNAGEM E FAROLETES</span>
+                                <span class="collapsible-item-desc">Verificar funcionamento e lente.</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="important-note">
+                        <h3 class="font-bold text-orange-700 text-xl mb-3 flex items-center">
+                            <i class="ph ph-warning-octagon text-orange-500 text-2xl mr-2"></i> ATENÇÃO !!!
+                        </h3>
+                        <ul class="text-gray-700 text-base leading-relaxed">
+                            <li>Consultar o operador sobre as condições do equipamento.</li>
+                            <li>Na revisão, siga corretamente as instruções do fabricante.</li>
+                            <li>Use somente água destilada nas baterias.</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Exemplo: Conteúdo do PMP para Máquina Escavadeira -->
+                <div id="pmp_maquina_content" class="hidden">
+                    <h3 class="text-xl font-bold text-blue-800 mb-4">Equipamento: Máquina Escavadeira - PMP Detalhado (Exemplo)</h3>
+                    <!-- COMPONENTE: SISTEMA HIDRÁULICO -->
+                    <div class="collapsible-group">
+                        <div class="collapsible-header rounded-xl" tabindex="0" role="button" aria-expanded="false" onclick="toggleCollapsible(this)">
+                            COMPONENTE: SISTEMA HIDRÁULICO
+                            <i class="ph ph-caret-down arrow-icon text-2xl"></i>
+                        </div>
+                        <div class="collapsible-content">
+                            <div class="collapsible-item">
+                                <span class="collapsible-item-name">BOMBA HIDRÁULICA</span>
+                                <span class="collapsible-item-desc">Verificar pressão, vazamentos e ruídos anormais.</span>
+                            </div>
+                            <div class="collapsible-item">
+                                <span class="collapsible-item-name">CILINDROS HIDRÁULICOS</span>
+                                <span class="collapsible-item-desc">Inspecionar por vazamentos, amassados e desgaste das hastes.</span>
+                            </div>
+                            <div class="collapsible-item">
+                                <span class="collapsible-item-name">MANGUEIRAS E CONEXÕES</span>
+                                <span class="collapsible-item-desc">Verificar por rachaduras, abrasão e vazamentos.</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- COMPONENTE: MATERIAL RODANTE -->
+                    <div class="collapsible-group">
+                        <div class="collapsible-header rounded-xl" tabindex="0" role="button" aria-expanded="false" onclick="toggleCollapsible(this)">
+                            COMPONENTE: MATERIAL RODANTE
+                            <i class="ph ph-caret-down arrow-icon text-2xl"></i>
+                        </div>
+                        <div class="collapsible-content">
+                            <div class="collapsible-item">
+                                <span class="collapsible-item-name">ESTEIRAS</span>
+                                <span class="collapsible-item-desc">Verificar tensão, desgaste dos pinos e buchas.</span>
+                            </div>
+                            <div class="collapsible-item">
+                                <span class="collapsible-item-name">ROLETES E RODAS GUIAS</span>
+                                <span class="collapsible-item-desc">Inspecionar rolamento, desgaste e lubrificação.</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="important-note">
+                        <h3 class="font-bold text-orange-700 text-xl mb-3 flex items-center">
+                            <i class="ph ph-warning-octagon text-orange-500 text-2xl mr-2"></i> ATENÇÃO !!!
+                        </h3>
+                        <ul class="text-gray-700 text-base leading-relaxed">
+                            <li>Sempre desligar o equipamento antes de qualquer inspeção.</li>
+                            <li>Utilizar EPIs adequados durante a manutenção.</li>
+                            <li>Registrar todas as inspeções e manutenções realizadas.</li>
+                        </ul>
+                    </div>
+                </div>
+                <!-- Fim do Conteúdo de Exemplo -->
+
+            </div>
+        </section>
+    </main>
+
+ <script src="js/pmp.js"></script>
+</body>
+</html>

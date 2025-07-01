@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>PL - Plano de Lubrificação - EFM Frotas</title>
+    <!-- Google Fonts: Poppins for modern typography -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <!-- Tailwind CSS CDN for utility-first styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Phosphor Icons for modern and clean iconography -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+
+<link rel="stylesheet" href="css/pl.css">
+</head>
+<body class="overflow-x-hidden">
+<header class="bg-blue-800 text-white p-4 flex flex-col md:flex-row items-center justify-between shadow-lg sticky top-0 z-50 rounded-b-xl">
+        <div class="font-extrabold text-3xl tracking-wider select-none mb-4 md:mb-0" tabindex="0">
+            <span class="text-white">EFM</span><span class="text-yellow-400"> FROTAS</span>
+        </div>
+        <nav class="flex flex-wrap gap-x-8 gap-y-4 items-center justify-center" role="navigation" aria-label="Menu principal">
+            <a href="dashboard.html" class="text-yellow-300 font-semibold text-lg py-2 px-1 relative whitespace-nowrap focus:outline-none focus:ring-4 focus:ring-yellow-300 focus:ring-opacity-50 rounded border-b-4 border-yellow-300">Dashboard</a>
+
+        
+
+            <div class="relative inline-block dropdown">
+                <button class="dropbtn text-white font-semibold text-lg hover:text-yellow-300 transition-colors duration-300 py-2 px-1 relative whitespace-nowrap focus:outline-none focus:ring-4 focus:ring-yellow-300 focus:ring-opacity-50 rounded" onclick="toggleDropdown('manutencao-menu', event)" aria-controls="manutencao-menu" aria-expanded="false" tabindex="0">
+                    Configurações <i class="ph ph-caret-down inline-block ml-1 align-middle"></i>
+                </button>
+                <div class="dropdown-content absolute top-12 left-0 bg-white rounded-xl shadow-xl min-w-[200px] hidden flex-col z-[9999] overflow-hidden" id="manutencao-menu" role="menu" aria-label="Planos de manutenção submenu">
+                <a href="CadastroVeiculos.html" class="px-6 py-3 text-gray-700 font-medium hover:bg-blue-50 hover:text-blue-800 transition-colors duration-200 whitespace-nowrap" role="menuitem" tabindex="0">Cadastro de Veiculos</a>
+                <a href="PlanoManutenção.html" class="px-6 py-3 text-gray-700 font-medium hover:bg-blue-50 hover:text-blue-800 transition-colors duration-200 whitespace-nowrap" role="menuitem" tabindex="0">Plano de Manutenção</a>
+                </div>
+
+
+            </div>
+<div class="relative inline-block dropdown">
+                <button class="dropbtn text-white font-semibold text-lg hover:text-yellow-300 transition-colors duration-300 py-2 px-1 relative whitespace-nowrap focus:outline-none focus:ring-4 focus:ring-yellow-300 focus:ring-opacity-50 rounded" onclick="toggleDropdown('cadastros-menu', event)" aria-controls="cadastros-menu" aria-expanded="false" tabindex="0">
+                    Ordem de Serviço <i class="ph ph-caret-down inline-block ml-1 align-middle"></i>
+                </button>
+                <div class="dropdown-content absolute top-12 left-0 bg-white rounded-xl shadow-xl min-w-[200px] hidden flex-col z-[9999] overflow-hidden" id="cadastros-menu" role="menu" aria-label="Cadastros submenu">
+                    <a href="agendamento.html" class="px-6 py-3 text-gray-700 font-medium hover:bg-blue-50 hover:text-blue-800 transition-colors duration-200 whitespace-nowrap" role="menuitem" tabindex="0">Gerar Ordem de Serviço</a>
+                    
+                </div>
+            <div class="relative inline-block dropdown">
+                <button class="dropbtn text-white font-semibold text-lg hover:text-yellow-300 transition-colors duration-300 py-2 px-1 relative whitespace-nowrap focus:outline-none focus:ring-4 focus:ring-yellow-300 focus:ring-opacity-50 rounded" onclick="toggleDropdown('gerenciamento-menu', event)" aria-controls="gerenciamento-menu" aria-expanded="false" tabindex="0">
+                    Gerenciamento <i class="ph ph-caret-down inline-block ml-1 align-middle"></i>
+                </button>
+                <div class="dropdown-content absolute top-12 left-0 bg-white rounded-xl shadow-xl min-w-[200px] hidden flex-col z-[9999] overflow-hidden" id="gerenciamento-menu" role="menu" aria-label="Gerenciamento submenu">
+                    <a href="controle.html" class="px-6 py-3 text-gray-700 font-medium hover:bg-blue-50 hover:text-blue-800 transition-colors duration-200 whitespace-nowrap" role="menuitem" tabindex="0">Controle</a>
+                    <a href="index.html" class="px-6 py-3 text-gray-700 font-medium hover:bg-blue-50 hover:text-blue-800 transition-colors duration-200 whitespace-nowrap" role="menuitem" tabindex="0">Visão Geral de Frota</a>
+                </div>
+            </div>
+
+            <a href="seguranca.html" class="text-white font-semibold text-lg hover:text-yellow-300 transition-colors duration-300 py-2 px-1 relative whitespace-nowrap focus:outline-none focus:ring-4 focus:ring-yellow-300 focus:ring-opacity-50 rounded" tabindex="0">Segurança</a>
+            <a href="#" onclick="logout()" class="text-white font-semibold text-lg hover:text-yellow-300 transition-colors duration-300 py-2 px-1 relative whitespace-nowrap focus:outline-none focus:ring-4 focus:ring-yellow-300 focus:ring-opacity-50 rounded" tabindex="0">Sair</a>
+        </nav>
+    </header>
+    <main class="max-w-7xl mx-auto my-12 px-4 md:px-6 flex-grow">
+        <h1 class="font-extrabold text-5xl mb-10 text-center text-blue-900 tracking-wide select-none">Plano de Lubrificação</h1>
+        <p class="text-lg text-gray-700 mb-8 text-center">Selecione o plano de lubrificação desejado para visualizar seus detalhes.</p>
+
+        <nav class="flex border-b border-gray-200 mb-8" aria-label="Abas de Manutenção">
+            <a href="PlanoManutenção.html" class="py-3 px-6 text-lg font-medium text-gray-600 hover:text-blue-800 hover:border-b-4 hover:border-blue-300 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors duration-300 rounded-t-lg">Voltar para Planos</a>
+            <a href="pl.html" class="py-3 px-6 text-lg font-medium text-blue-800 border-b-4 border-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors duration-300 rounded-t-lg">PL - Plano de Lubrificação</a>
+            <a href="PMP.HTML" class="py-3 px-6 text-lg font-medium text-gray-600 hover:text-blue-800 hover:border-b-4 hover:border-blue-300 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors duration-300 rounded-t-lg">PMP - Plano de Manutenção Preventiva</a>
+        </nav>
+
+        <section class="bg-white p-6 md:p-8 rounded-3xl shadow-lg mb-12" aria-label="Seleção de Plano de Lubrificação">
+            <h2 class="text-2xl font-bold text-blue-900 mb-6 flex items-center">
+                <i class="ph ph-list text-blue-600 text-3xl mr-3"></i> Selecionar Plano
+            </h2>
+            <div class="mb-6">
+                <label for="selectPlan" class="block font-semibold mb-2 text-gray-700 text-lg">Escolha um Plano de Lubrificação:</label>
+                <select id="selectPlan" class="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 text-lg">
+                    <option value="">-- Selecione um Plano --</option>
+                    <option value="pl2000h_scania">Caminhão Basculante SCANIA P420 - B6X4 PL 2000 h</option>
+                    <option value="pl500h_escavadeira">Máquina Escavadeira - PL 500 h (Exemplo)</option>
+                    <!-- Adicione mais opções de planos aqui -->
+                </select>
+            </div>
+
+            <!-- Conteúdo dinâmico do plano de lubrificação será carregado aqui -->
+            <div id="planContent" class="space-y-4">
+                <!-- Conteúdo do PL 2000h para Scania -->
+                <div id="pl2000h_scania_content" class="hidden">
+                    <h3 class="text-xl font-bold text-blue-800 mb-4">Equipamento: Caminhão Basculante SCANIA P420 - B6X4 PL 2000 h</h3>
+                    <!-- ÓLEOS LUBRIFICANTE/HIDRÁULICO -->
+                    <div class="collapsible-group">
+                        <div class="collapsible-header rounded-xl" tabindex="0" role="button" aria-expanded="false" onclick="toggleCollapsible(this)">
+                            ÓLEOS LUBRIFICANTE/HIDRÁULICO
+                            <i class="ph ph-caret-down arrow-icon text-2xl"></i>
+                        </div>
+                        <div class="collapsible-content">
+                            <div class="collapsible-item">
+                                <span class="collapsible-item-name">MOTOR</span>
+                                <span class="collapsible-item-desc">Trocar 37 Lt de Óleo SAE-15W840 (API CH-4) / Retirar amostra</span>
+                            </div>
+                            <div class="collapsible-item">
+                                <span class="collapsible-item-name">CAIXA DE MARCHA</span>
+                                <span class="collapsible-item-desc">Trocar 15 Lt de Óleo SAE 85W140 (API GL-5) / Retirar amostra</span>
+                            </div>
+                            <div class="collapsible-item">
+                                <span class="collapsible-item-name">RETARDO</span>
+                                <span class="collapsible-item-desc">Trocar 8 Lt de Óleo ATF DEXRON II / Retirar amostra</span>
+                            </div>
+                            <div class="collapsible-item">
+                                <span class="collapsible-item-name">CILINDRO DE CURSO (OPTICRUISE)</span>
+                                <span class="collapsible-item-desc">Trocar 0,27 Lt Óleo ATF</span>
+                            </div>
+                            <div class="collapsible-item">
+                                <span class="collapsible-item-name">DIFERENCIAL TRASEIRO I</span>
+                                <span class="collapsible-item-desc">Trocar 18 Lt de Óleo SAE-85W140 (API GL-5) / Retirar amostra</span>
+                            </div>
+                            <div class="collapsible-item">
+                                <span class="collapsible-item-name">DIFERENCIAL TRASEIRO II</span>
+                                <span class="collapsible-item-desc">Trocar 16 Lt de Óleo SAE-85W140 (API GL-5) / Retirar amostra</span>
+                            </div>
+                            <div class="collapsible-item">
+                                <span class="collapsible-item-name">REDUÇÃO DOS CUBOS</span>
+                                <span class="collapsible-item-desc">Trocar 3 Lt de Óleo SAE-85W140 (API GL-5) cada cubo</span>
+                            </div>
+                            <div class="collapsible-item">
+                                <span class="collapsible-item-name">SISTEMA DE DIREÇÃO</span>
+                                <span class="collapsible-item-desc">Trocar 3 Lt Óleo ATF tipo "A"</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- FILTROS - SUSPIROS - TELAS -->
+                    <div class="collapsible-group">
+                        <div class="collapsible-header rounded-xl" tabindex="0" role="button" aria-expanded="false" onclick="toggleCollapsible(this)">
+                            FILTROS - SUSPIROS - TELAS
+                            <i class="ph ph-caret-down arrow-icon text-2xl"></i>
+                        </div>
+                        <div class="collapsible-content">
+                            <div class="collapsible-item">
+                                <span class="collapsible-item-name">FILTRO ÓLEO DO MOTOR</span>
+                                <span class="collapsible-item-desc">Trocar 01 Pç. referência 1117285</span>
+                            </div>
+                            <div class="collapsible-item">
+                                <span class="collapsible-item-name">FILTRO ÓLEO DIESEL PRIMÁRIO</span>
+                                <span class="collapsible-item-desc">Trocar 01 Pç. referência 1873918</span>
+                            </div>
+                            <div class="collapsible-item">
+                                <span class="collapsible-item-name">FILTRO ÓLEO DIESEL SECUNDÁRIO</span>
+                                <span class="collapsible-item-desc">Trocar 01 Pç. referência 1429058</span>
+                            </div>
+                            <div class="collapsible-item">
+                                <span class="collapsible-item-name">FILTRO SEPARADOR DE ÁGUA</span>
+                                <span class="collapsible-item-desc">Trocar 01 Pç. referência 1518512</span>
+                            </div>
+                            <div class="collapsible-item">
+                                <span class="collapsible-item-name">FILTRO DO RETARDO</span>
+                                <span class="collapsible-item-desc">Trocar 01 Pç. referência 1381235</span>
+                            </div>
+                            <div class="collapsible-item">
+                                <span class="collapsible-item-name">FILTRO DA CAIXA DE MARCHAS</span>
+                                <span class="collapsible-item-desc">Trocar 01 Pç. referência 1301696</span>
+                            </div>
+                            <div class="collapsible-item">
+                                <span class="collapsible-item-name">FILTRO ÓLEO DOS DIFERENCIAIS</span>
+                                <span class="collapsible-item-desc">Trocar 01 Pç. referência 1301696 ou 176842 -(se equipado)</span>
+                            </div>
+                            <div class="collapsible-item">
+                                <span class="collapsible-item-name">FILTRO AR DA CABINE</span>
+                                <span class="collapsible-item-desc">Trocar 01 Pç. referência 1420197</span>
+                            </div>
+                            <div class="collapsible-item">
+                                <span class="collapsible-item-name">FILTRO AR</span>
+                                <span class="collapsible-item-desc">Limpar (se indicador acusar) / Testar indicador de restrição de ar</span>
+                            </div>
+                            <div class="collapsible-item">
+                                <span class="collapsible-item-name">RESPIRO MOTOR</span>
+                                <span class="collapsible-item-desc">Limpar</span>
+                            </div>
+                            <div class="collapsible-item">
+                                <span class="collapsible-item-name">RESPIRO TANQUE DIESEL</span>
+                                <span class="collapsible-item-desc">Limpar</span>
+                            </div>
+                            <div class="collapsible-item">
+                                <span class="collapsible-item-name">FILTRO AR CONDICIONADO</span>
+                                <span class="collapsible-item-desc">Trocar 01 Pç. ref. 1770813</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- OUTROS -->
+                    <div class="collapsible-group">
+                        <div class="collapsible-header rounded-xl" tabindex="0" role="button" aria-expanded="false" onclick="toggleCollapsible(this)">
+                            OUTROS
+                            <i class="ph ph-caret-down arrow-icon text-2xl"></i>
+                        </div>
+                        <div class="collapsible-content">
+                            <div class="collapsible-item">
+                                <span class="collapsible-item-name">BALÕES DE AR</span>
+                                <span class="collapsible-item-desc">Drenar Água e ou Condensação / Verifique presença de óleo</span>
+                            </div>
+                            <div class="collapsible-item">
+                                <span class="collapsible-item-name">PONTOS DE LUBRIFICAÇÃO</span>
+                                <span class="collapsible-item-desc">Lubrificar</span>
+                            </div>
+                            <div class="collapsible-item">
+                                <span class="collapsible-item-name">TANQUE DIESEL</span>
+                                <span class="collapsible-item-desc">Drenar Água e ou Condensação</span>
+                            </div>
+                            <div class="collapsible-item">
+                                <span class="collapsible-item-name">EQUIPAMENTO COMPLETO</span>
+                                <span class="collapsible-item-desc">Lavar</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="important-note">
+                        <h3 class="font-bold text-orange-700 text-xl mb-3 flex items-center">
+                            <i class="ph ph-warning-octagon text-orange-500 text-2xl mr-2"></i> ATENÇÃO !!!
+                        </h3>
+                        <ul class="text-gray-700 text-base leading-relaxed">
+                            <li>Não misturar lubrificantes de fabricantes diferentes.</li>
+                            <li>Utilizar somente FILTROS ORIGINAIS ou os filtros de marca indicada pela AFEQ.</li>
+                            <li>Filtro de ar primário, substituir se necessário ou após 6 (seis) intervenções ou 1 (um) ano, 01 peça ref. 1730757</li>
+                            <li>Filtro de ar segurança nunca limpar. Substituir junto com o filtro primário, 01 peça ref. 1377201</li>
+                            <li>Radiador. Sempre complete com líquido arrefecedor (aditivo + água potável na diluição recomendada pelo fabricante do aditivo).</li>
+                            <li>Trocar o líquido arrefecedor no período recomendado pelo fabricante do aditivo.</li>
+                            <li>Misture o aditivo à água, nunca o inverso, a mistura deve ter contínua agitação.</li>
+                            <li>Pneus: calibrar frios.</li>
+                            <li>Não lavar o equipamento com motor quente.</li>
+                            <li>Durante o período de garantia, a periodicidade de troca de óleos lubrificantes e filtros devem seguir as recomendações do fabricante.</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Exemplo: Conteúdo do PL 500h para Máquina Escavadeira -->
+                <div id="pl500h_escavadeira_content" class="hidden">
+                    <h3 class="text-xl font-bold text-blue-800 mb-4">Equipamento: Máquina Escavadeira - PL 500 h</h3>
+                    <!-- ÓLEOS LUBRIFICANTE/HIDRÁULICO -->
+                    <div class="collapsible-group">
+                        <div class="collapsible-header rounded-xl" tabindex="0" role="button" aria-expanded="false" onclick="toggleCollapsible(this)">
+                            ÓLEOS LUBRIFICANTE/HIDRÁULICO
+                            <i class="ph ph-caret-down arrow-icon text-2xl"></i>
+                        </div>
+                        <div class="collapsible-content">
+                            <div class="collapsible-item">
+                                <span class="collapsible-item-name">MOTOR</span>
+                                <span class="collapsible-item-desc">Trocar 20 Lt de Óleo SAE-10W40 (API CJ-4) / Verificar nível</span>
+                            </div>
+                            <div class="collapsible-item">
+                                <span class="collapsible-item-name">HIDRÁULICO</span>
+                                <span class="collapsible-item-desc">Verificar nível do óleo hidráulico / Retirar amostra</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- FILTROS - SUSPIROS - TELAS -->
+                    <div class="collapsible-group">
+                        <div class="collapsible-header rounded-xl" tabindex="0" role="button" aria-expanded="false" onclick="toggleCollapsible(this)">
+                            FILTROS - SUSPIROS - TELAS
+                            <i class="ph ph-caret-down arrow-icon text-2xl"></i>
+                        </div>
+                        <div class="collapsible-content">
+                            <div class="collapsible-item">
+                                <span class="collapsible-item-name">FILTRO DE COMBUSTÍVEL</span>
+                                <span class="collapsible-item-desc">Substituir 01 Pç. referência XXXXXX</span>
+                            </div>
+                            <div class="collapsible-item">
+                                <span class="collapsible-item-name">FILTRO DE AR EXTERNO</span>
+                                <span class="collapsible-item-desc">Limpar ou substituir conforme condição</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- OUTROS -->
+                    <div class="collapsible-group">
+                        <div class="collapsible-header rounded-xl" tabindex="0" role="button" aria-expanded="false" onclick="toggleCollapsible(this)">
+                            OUTROS
+                            <i class="ph ph-caret-down arrow-icon text-2xl"></i>
+                        </div>
+                        <div class="collapsible-content">
+                            <div class="collapsible-item">
+                                <span class="collapsible-item-name">PONTOS DE LUBRIFICAÇÃO</span>
+                                <span class="collapsible-item-desc">Injetar graxa em todos os pinos e buchas</span>
+                            </div>
+                            <div class="collapsible-item">
+                                <span class="collapsible-item-name">MATERIAL RODANTE</span>
+                                <span class="collapsible-item-desc">Verificar tensão das esteiras e desgaste dos componentes</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="important-note">
+                        <h3 class="font-bold text-orange-700 text-xl mb-3 flex items-center">
+                            <i class="ph ph-warning-octagon text-orange-500 text-2xl mr-2"></i> ATENÇÃO !!!
+                        </h3>
+                        <ul class="text-gray-700 text-base leading-relaxed">
+                            <li>Consultar o manual do fabricante para especificações exatas.</li>
+                            <li>Realizar inspeção visual de vazamentos.</li>
+                            <li>Manter o ambiente de trabalho limpo para evitar contaminação.</li>
+                        </ul>
+                    </div>
+                </div>
+                <!-- Fim do Conteúdo de Exemplo -->
+
+            </div>
+        </section>
+    </main>
+<script src="js/pl.js"></script>
+
+</body>
+</html>

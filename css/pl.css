@@ -1,0 +1,145 @@
+
+        /* CSS extra para animação e melhor visibilidade dos campos dinâmicos */
+        .hidden { display: none; }
+        .fade-in {
+            animation: fadeIn 0.4s ease-in forwards;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; max-height: 0; }
+            to { opacity: 500px; opacity: 1; } /* Adjusted max-height and added opacity for smoother fade */
+        }
+
+        /* Basic styling for dropdown items for consistency */
+        .dropdown-item {
+            padding: 12px 24px;
+            color: #4a5568; /* gray-700 */
+            font-weight: 500; /* medium */
+            transition: background-color 0.2s ease, color 0.2s ease;
+            white-space: nowrap;
+        }
+
+        .dropdown-item:hover {
+            background-color: #eff6ff; /* blue-50 */
+            color: #2b6cb0; /* blue-800 */
+        }
+
+        /* Styling for menu links in header */
+        .menu-link {
+            transition: color 0.3s ease, border-color 0.3s ease;
+            border-bottom: 4px solid transparent; /* default state */
+            padding-bottom: 8px; /* give space for border */
+        }
+
+        .menu-link:hover {
+            color: #fcd34d; /* yellow-300 */
+            border-color: #fcd34d; /* yellow-300 */
+        }
+
+        /* Style for the active menu link */
+        .menu-link.active-menu-link {
+            color: #fcd34d; /* yellow-300 */
+            border-color: #fcd34d; /* yellow-300 */
+        }
+
+        /* Styles for form elements */
+        .form-label {
+            font-weight: 600; /* semibold */
+            display: block;
+            margin-bottom: 4px;
+            color: #2d3748; /* gray-800 */
+        }
+
+        .form-input {
+            width: 100%;
+            border: 1px solid #d1d5db; /* gray-300 */
+            border-radius: 0.375rem; /* rounded-md */
+            padding: 12px; /* p-3 */
+            margin-top: 4px; /* mt-1 */
+            font-size: 1rem;
+            line-height: 1.5;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #3b82f6; /* blue-500 */
+            box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.5); /* ring-2 focus:ring-blue-500 */
+        }
+
+        .action-button {
+            background-color: #22c55e; /* green-500 */
+            color: white;
+            padding: 12px 24px;
+            border-radius: 0.375rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            width: 100%;
+            transition: background-color 0.3s ease;
+        }
+
+        .action-button:hover {
+            background-color: #16a34a; /* green-600 */
+        }
+
+        /* Tab button styles */
+        .tab-button {
+            border-bottom: 2px solid transparent;
+            font-weight: 500;
+            transition: all 0.2s ease-in-out;
+            padding: 0.75rem 1rem;
+            text-align: center;
+            flex-grow: 1;
+            text-decoration: none;
+        }
+
+        .tab-button.active {
+            color: #2563eb; /* blue-600 */
+            border-color: #2563eb; /* blue-600 */
+            font-weight: 600;
+        }
+
+        .tab-button:hover:not(.active) {
+            color: #3b82f6; /* blue-500 */
+            border-color: #bfdbfe; /* blue-200 */
+        }
+
+        /* Styles for service options */
+        .service-option-box {
+            border: 1px solid #e2e8f0; /* gray-200 */
+            padding: 1.5rem;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            transition: all 0.2s ease-in-out;
+            text-align: center;
+            background-color: white;
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+        }
+
+        .service-option-box:hover {
+            border-color: #3b82f6; /* blue-500 */
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            transform: translateY(-2px);
+        }
+
+        .service-option-box.selected {
+            border-color: #2563eb; /* blue-600 */
+            background-color: #eff6ff; /* blue-50 */
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+
+        .service-option-box h3 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #2d3748; /* gray-800 */
+            margin-bottom: 0.5rem;
+        }
+
+        .service-option-box p {
+            color: #64748b; /* slate-500 */
+            font-size: 0.95rem;
+        }
+
+   

@@ -1,0 +1,57 @@
+body {
+  margin: 0;
+  padding: 0;
+  font-family: 'Inter', sans-serif;
+  background-image: url('../image/WhatsApp\ Image\ 2025-06-25\ at\ 20.32.27.jpeg'); /* ou apenas 'image/bg-login.jpg' se estiver no mesmo nível */
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+    .login-box {
+      background-color: rgba(255, 255, 255, 0.96);
+      padding: 2.5rem;
+      border-radius: 1.5rem;
+      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.3);
+      max-width: 400px;
+      width: 100%;
+      backdrop-filter: blur(8px);
+      text-align: center;
+    }
+    .form-input {
+      padding-left: 2.5rem;
+    }
+    .input-icon {
+      position: absolute;
+      top: 50%;
+      left: 1rem;
+      transform: translateY(-50%);
+      color: #aaa;
+      pointer-events: none;
+    }
+    .btn-primary {
+      background-color: #002f6c;
+      transition: all 0.3s ease;
+    }
+    .btn-primary:hover {
+      background-color: #004999;
+    }
+    .relative {
+      position: relative;
+    }
+    .hidden {
+      display: none;
+    }
+    /* Pequeno ajuste para o botão do link */
+    .link-button {
+      color: #2563eb; /* azul */
+      cursor: pointer;
+      text-decoration: underline;
+    }
+    .link-button:hover {
+      color: #1e40af;
+    }

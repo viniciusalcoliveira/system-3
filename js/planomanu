@@ -1,0 +1,75 @@
+ 
+        // --- SEGURANÇA DE LOGIN ---
+        // Redireciona para a página de login se o usuário não estiver 'logado'.
+        if (localStorage.getItem('logado') !== 'true') {
+            if (typeof __app_id === 'undefined') {
+                window.location.href = 'index.html'; // Redireciona para a página de login
+            } else {
+                console.log("Running in Canvas environment, bypassing login redirect.");
+                localStorage.setItem('logado', 'true');
+            }
+        }
+
+        // Função para realizar logout.
+        function logout() {
+            localStorage.removeItem('logado');
+            if (typeof __app_id === 'undefined') {
+                window.location.href = 'index.html'; // Redireciona para a página de login
+            } else {
+                console.log("Running in Canvas environment, logout simulated.");
+            }
+        }
+
+        // --- FUNCIONALIDADE DE DROPDOWN MENUS (HEADER) ---
+        function toggleDropdown(id, event) {
+            event.preventDefault();
+            event.stopPropagation();
+
+            const menu = document.getElementById(id);
+            const isVisible = menu.style.display === 'flex';
+
+            document.querySelectorAll('.dropdown-content').forEach(m => {
+                if (m !== menu) {
+                    m.style.display = 'none';
+                    if (m.previousElementSibling) {
+                        m.previousElementSibling.setAttribute('aria-expanded', 'false');
+                        m.classList.remove('animate-fade-in');
+                    }
+                }
+            });
+
+            if (!isVisible) {
+                menu.style.display = 'flex';
+                menu.style.flexDirection = 'column';
+                menu.classList.add('animate-fade-in');
+                if (menu.previousElementSibling) {
+                    menu.previousElementSibling.setAttribute('aria-expanded', 'true');
+                }
+            } else {
+                menu.style.display = 'none';
+                menu.classList.remove('animate-fade-in');
+                if (menu.previousElementSibling) {
+                    menu.previousElementSibling.setAttribute('aria-expanded', 'false');
+                }
+            }
+        }
+
+        document.addEventListener('click', (event) => {
+            const isClickInsideDropdown = event.target.closest('.dropdown');
+            if (!isClickInsideDropdown) {
+                document.querySelectorAll('.dropdown-content').forEach(menu => {
+                    if (menu.style.display === 'flex') {
+                        menu.style.display = 'none';
+                        menu.classList.remove('animate-fade-in');
+                        if (menu.previousElementSibling) {
+                            menu.previousElementSibling.setAttribute('aria-expanded', 'false');
+                        }
+                    }
+                });
+            }
+        });
+
+        // Ensure functions are globally accessible
+        window.toggleDropdown = toggleDropdown;
+        window.logout = logout;
+  

@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>EFM Frotas - Sistema de Gestão</title>
+    <!-- Google Fonts: Poppins for modern typography -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <!-- Tailwind CSS CDN for utility-first styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Phosphor Icons for modern and clean iconography -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+
+    <!-- Configure Tailwind to use Poppins font -->
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f0f4f8; /* Light background for a clean look */
+            color: #2c3e50; /* Darker text for readability */
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased; /* Smoother font rendering */
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        /* Custom animation for dropdown fade-in */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scaleY(0.9) translateY(-10px); }
+            to { opacity: 1; transform: scaleY(1) translateY(0); }
+        }
+        .animate-fade-in {
+            animation: fadeIn 0.3s ease-out forwards;
+            transform-origin: top;
+        }
+
+        /* Custom scrollbar styling for a consistent look */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background-color: rgba(11, 61, 145, 0.6); /* Semi-transparent primary blue */
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-track {
+            background: rgba(11, 61, 145, 0.1); /* Lighter track */
+        }
+    </style>
+</head>
+<body class="overflow-x-hidden">
+
+    <!-- Header Section -->
+   <header class="bg-blue-800 text-white p-4 flex flex-col md:flex-row items-center justify-between shadow-lg sticky top-0 z-50 rounded-b-xl">
+    <div class="font-extrabold text-3xl tracking-wider select-none mb-4 md:mb-0" tabindex="0">
+        <span class="text-white">EFM</span><span class="text-yellow-400"> FROTAS</span>
+    </div>
+
+    <nav class="flex flex-wrap gap-x-4 gap-y-2 items-center justify-center" role="navigation" aria-label="Menu principal">
+
+        <a href="dashboard.html" class="menu-link text-white font-semibold text-base py-2 px-2 relative whitespace-nowrap border-b-4 border-transparent hover:text-yellow-300 hover:border-yellow-300 transition">
+            Dashboard
+        </a>
+
+        <div class="relative dropdown">
+            <button onclick="toggleDropdown('menu-configuracoes', event)" class="menu-link text-white font-semibold text-base py-2 px-2 hover:text-yellow-300 hover:border-yellow-300 border-b-4 border-transparent transition">
+                Configurações <i class="ph ph-caret-down ml-1"></i>
+            </button>
+            <div id="menu-configuracoes" class="dropdown-content hidden absolute top-12 left-0 bg-white rounded-xl shadow-xl min-w-[220px] flex-col z-[9999] overflow-hidden">
+                <a href="CadastroVeiculos.html" class="dropdown-item">Cadastro de Veículos</a>
+                <a href="" class="dropdown-item">Cadastro de Marcas</a>
+
+            </div>
+        </div>
+
+        <div class="relative dropdown">
+            <button onclick="toggleDropdown('menu-plano', event)" class="menu-link text-white font-semibold text-base py-2 px-2 hover:text-yellow-300 hover:border-yellow-300 border-b-4 border-transparent transition">
+                Plano de Manutenção <i class="ph ph-caret-down ml-1"></i>
+            </button>
+            <div id="menu-plano" class="dropdown-content hidden absolute top-12 left-0 bg-white rounded-xl shadow-xl min-w-[220px] flex-col z-[9999] overflow-hidden">
+                <a href="PMP.html" class="dropdown-item">PMP - Preventiva</a>
+                <a href="PL.html" class="dropdown-item">PL - Lubrificação</a>
+            </div>
+        </div>
+
+        <div class="relative dropdown">
+            <button onclick="toggleDropdown('menu-os', event)" class="menu-link text-white font-semibold text-base py-2 px-2 hover:text-yellow-300 hover:border-yellow-300 border-b-4 border-transparent transition">
+                Ordem de Serviço <i class="ph ph-caret-down ml-1"></i>
+            </button>
+            <div id="menu-os" class="dropdown-content hidden absolute top-12 left-0 bg-white rounded-xl shadow-xl min-w-[220px] flex-col z-[9999] overflow-hidden">
+                <a href="agendamento.html" class="dropdown-item">Gerar Ordem de Serviço</a>
+            </div>
+        </div>
+
+        <div class="relative dropdown">
+            <button onclick="toggleDropdown('menu-gerenciamento', event)" class="menu-link text-white font-semibold text-base py-2 px-2 hover:text-yellow-300 hover:border-yellow-300 border-b-4 border-transparent transition">
+                Gerenciamento <i class="ph ph-caret-down ml-1"></i>
+            </button>
+            <div id="menu-gerenciamento" class="dropdown-content hidden absolute top-12 left-0 bg-white rounded-xl shadow-xl min-w-[220px] flex-col z-[9999] overflow-hidden">
+                <a href="controle.html" class="dropdown-item">Controle</a>
+                <a href="index.html" class="dropdown-item">Visão Geral de Frota</a>
+            </div>
+        </div>
+
+        <a href="seguranca.html" class="menu-link text-white font-semibold text-base py-2 px-2 hover:text-yellow-300 hover:border-yellow-300 border-b-4 border-transparent transition">
+            Segurança
+        </a>
+
+        <a href="#" onclick="logout()" class="menu-link text-white font-semibold text-base py-2 px-2 hover:text-yellow-300 hover:border-yellow-300 border-b-4 border-transparent transition">
+            Sair
+        </a>
+    </nav>
+</header>
+
+<style>
+    .active-menu {
+        color: #facc15 !important; /* yellow-300 */
+        border-bottom: 4px solid #facc15 !important; /* yellow-300 */
+    }
+
+    .dropdown-item {
+        padding: 0.75rem 1.5rem;
+        color: #374151; /* gray-700 */
+        font-weight: 500;
+        white-space: nowrap;
+    }
+
+    .dropdown-item:hover {
+        background-color: #eff6ff; /* blue-50 */
+        color: #1e40af; /* blue-800 */
+    }
+</style>
+
+<script>
+    function toggleDropdown(menuId, event) {
+        event.stopPropagation();
+        document.querySelectorAll('.dropdown-content').forEach(menu => menu.classList.add('hidden'));
+        document.getElementById(menuId).classList.toggle('hidden');
+    }
+
+    document.addEventListener('click', function() {
+        document.querySelectorAll('.dropdown-content').forEach(menu => menu.classList.add('hidden'));
+    });
+
+    // Função para ativar o item de menu correto
+    function activateMenuItem() {
+        const currentPath = window.location.pathname.split('/').pop(); // Pega o nome do arquivo da URL (ex: "dashboard.html")
+
+        document.querySelectorAll('.menu-link, .dropdown-item').forEach(item => {
+            // Remove a classe 'active-menu' de todos os itens primeiro
+            item.classList.remove('active-menu');
+
+            // Pega o href do item
+            const itemHref = item.getAttribute('href');
+
+            // Verifica se o href existe e se o caminho atual corresponde ao href
+            if (itemHref && itemHref.endsWith(currentPath)) {
+                item.classList.add('active-menu');
+
+                // Se o item ativo for um dropdown-item, também queremos "ativar" o botão pai do dropdown
+                let parentDropdown = item.closest('.dropdown');
+                if (parentDropdown) {
+                    let dropdownButton = parentDropdown.querySelector('.menu-link');
+                    if (dropdownButton) {
+                        dropdownButton.classList.add('active-menu');
+                    }
+                }
+            }
+        });
+    }
+
+    // Chama a função quando a página é carregada
+    document.addEventListener('DOMContentLoaded', activateMenuItem);
+
+    // Adiciona o evento de clique para que, ao navegar, a classe 'active-menu' seja aplicada imediatamente
+    document.querySelectorAll('.menu-link, .dropdown-item').forEach(item => {
+        item.addEventListener('click', function() {
+            // Remove a classe 'active-menu' de todos os itens ao clicar em um novo item
+            document.querySelectorAll('.menu-link, .dropdown-item').forEach(i => i.classList.remove('active-menu'));
+            // Adiciona a classe 'active-menu' ao item clicado
+            this.classList.add('active-menu');
+
+            // Se o item clicado for um dropdown-item, ativa também o botão pai do dropdown
+            let parentDropdown = this.closest('.dropdown');
+            if (parentDropdown) {
+                let dropdownButton = parentDropdown.querySelector('.menu-link');
+                if (dropdownButton) {
+                    dropdownButton.classList.add('active-menu');
+                }
+            }
+        });
+    });
+// terminando header
+</script>
+
+
+    <!-- Main Content Section - Redesigned Dashboard -->
+    <main class="max-w-7xl mx-auto my-12 px-4 md:px-6 flex-grow">
+        <h1 class="font-extrabold text-5xl mb-10 text-center text-blue-900 tracking-wide select-none">Visão Geral da Frota</h1>
+
+        <section class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12" aria-label="Métricas chave da frota">
+            <!-- Metric Card: Total Vehicles -->
+            <div class="bg-white p-6 rounded-2xl shadow-md flex items-center justify-between transition-transform duration-300 hover:scale-[1.02] hover:shadow-lg">
+                <div class="flex flex-col">
+                    <span class="text-gray-500 text-sm font-medium">Veículos Totais</span>
+                    <span class="text-4xl font-extrabold text-blue-800 mt-1">125</span>
+                </div>
+                <i class="ph ph-truck text-blue-500 text-5xl"></i>
+            </div>
+
+            <!-- Metric Card: Vehicles in Operation -->
+            <div class="bg-white p-6 rounded-2xl shadow-md flex items-center justify-between transition-transform duration-300 hover:scale-[1.02] hover:shadow-lg">
+                <div class="flex flex-col">
+                    <span class="text-gray-500 text-sm font-medium">Em Operação</span>
+                    <span class="text-4xl font-extrabold text-green-700 mt-1">105</span>
+                </div>
+                <i class="ph ph-play-circle text-green-500 text-5xl"></i>
+            </div>
+
+            <!-- Metric Card: Vehicles Under Maintenance -->
+            <div class="bg-white p-6 rounded-2xl shadow-md flex items-center justify-between transition-transform duration-300 hover:scale-[1.02] hover:shadow-lg">
+                <div class="flex flex-col">
+                    <span class="text-gray-500 text-sm font-medium">Em Manutenção</span>
+                    <span class="text-4xl font-extrabold text-yellow-600 mt-1">15</span>
+                </div>
+                <i class="ph ph-wrench text-yellow-500 text-5xl"></i>
+            </div>
+
+            <!-- Metric Card: Total Drivers -->
+            <div class="bg-white p-6 rounded-2xl shadow-md flex items-center justify-between transition-transform duration-300 hover:scale-[1.02] hover:shadow-lg">
+                <div class="flex flex-col">
+                    <span class="text-gray-500 text-sm font-medium">Motoristas Ativos</span>
+                    <span class="text-4xl font-extrabold text-indigo-700 mt-1">90</span>
+                </div>
+                <i class="ph ph-users text-indigo-500 text-5xl"></i>
+            </div>
+
+            <!-- Metric Card: Today's Fuel Cost -->
+            <div class="bg-white p-6 rounded-2xl shadow-md flex items-center justify-between transition-transform duration-300 hover:scale-[1.02] hover:shadow-lg">
+                <div class="flex flex-col">
+                    <span class="text-gray-500 text-sm font-medium">Custo Diário Combustível</span>
+                    <span class="text-3xl font-extrabold text-red-600 mt-1">R$ 2.500,00</span>
+                </div>
+                <i class="ph ph-gas-pump text-red-500 text-5xl"></i>
+            </div>
+
+            <!-- Metric Card: Expiring Documents -->
+            <div class="bg-white p-6 rounded-2xl shadow-md flex items-center justify-between transition-transform duration-300 hover:scale-[1.02] hover:shadow-lg">
+                <div class="flex flex-col">
+                    <span class="text-gray-500 text-sm font-medium">Documentos a Vencer</span>
+                    <span class="text-4xl font-extrabold text-orange-600 mt-1">8</span>
+                </div>
+                <i class="ph ph-file-text text-orange-500 text-5xl"></i>
+            </div>
+        </section>
+
+        <!-- Section: Upcoming Tasks/Alerts -->
+        <section class="bg-white p-6 md:p-8 rounded-3xl shadow-lg mb-12" aria-label="Próximas manutenções e alertas">
+            <h2 class="text-2xl font-bold text-blue-900 mb-6 flex items-center">
+                <i class="ph ph-calendar-check text-blue-600 text-3xl mr-3"></i> Próximas Atividades e Alertas
+            </h2>
+            <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider rounded-tl-lg">Tipo</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Veículo</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Descrição</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Data/Prazo</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider rounded-tr-lg">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-gray-200">
+                        <tr>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">Manutenção</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Caminhão ABC-1234</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Troca de óleo e filtros</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">25/07/2025</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-yellow-600 font-semibold">Pendente</td>
+                        </tr>
+                        <tr>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">Documento</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Máquina XYZ-5678</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Renovação de Licença</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">10/08/2025</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-orange-600 font-semibold">Próximo</td>
+                        </tr>
+                        <tr>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">Inspeção</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Caminhão DEF-5678</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Inspeção de segurança</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">01/09/2025</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-yellow-600 font-semibold">Pendente</td>
+                        </tr>
+                        <tr>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">Manutenção</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Caminhão GHI-9012</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Alinhamento e balanceamento</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">15/09/2025</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-green-600 font-semibold">Agendado</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Section: Recent Activities -->
+        <section class="bg-white p-6 md:p-8 rounded-3xl shadow-lg" aria-label="Atividades recentes na frota">
+            <h2 class="text-2xl font-bold text-blue-900 mb-6 flex items-center">
+                <i class="ph ph-activity text-blue-600 text-3xl mr-3"></i> Atividades Recentes
+            </h2>
+            <div class="space-y-4">
+                <div class="flex items-start bg-gray-50 p-4 rounded-xl shadow-sm">
+                    <i class="ph ph-fuel text-blue-500 text-2xl mr-4 mt-1"></i>
+                    <div>
+                        <p class="text-gray-800 font-medium">Abastecimento: <span class="font-bold">Caminhão ABC-1234</span> recebeu 150L de Diesel.</p>
+                        <p class="text-gray-500 text-sm">23 de Julho, 10:30</p>
+                    </div>
+                </div>
+                <div class="flex items-start bg-gray-50 p-4 rounded-xl shadow-sm">
+                    <i class="ph ph-tool text-green-500 text-2xl mr-4 mt-1"></i>
+                    <div>
+                        <p class="text-gray-800 font-medium">Manutenção Concluída: <span class="font-bold">Máquina XYZ-5678</span> - Troca de pneus.</p>
+                        <p class="text-gray-500 text-sm">22 de Julho, 14:00</p>
+                    </div>
+                </div>
+                <div class="flex items-start bg-gray-50 p-4 rounded-xl shadow-sm">
+                    <i class="ph ph-traffic-cone text-red-500 text-2xl mr-4 mt-1"></i>
+                    <div>
+                        <p class="text-gray-800 font-medium">Alerta de Multa: <span class="font-bold">Caminhão DEF-5678</span> - Excesso de velocidade.</p>
+                        <p class="text-gray-500 text-sm">21 de Julho, 09:15</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        // --- SEGURANÇA DE LOGIN ---
+        // Redireciona para a página de login se o usuário não estiver 'logado'.
+        // Isso impede o acesso direto à dashboard sem autenticação.
+        // Added a check for __app_id to prevent redirection errors in the Canvas environment.
+        if (localStorage.getItem('logado') !== 'true') {
+            // Only redirect if not in the Canvas environment (where __app_id is defined).
+            if (typeof __app_id === 'undefined') {
+                window.location.href = 'login.html';
+            } else {
+                // For Canvas environment, set logged in state for demonstration.
+                console.log("Running in Canvas environment, bypassing login redirect.");
+                localStorage.setItem('logado', 'true');
+            }
+        }
+
+        // Função para realizar logout.
+        // Remove o status de 'logado' e redireciona para a página de login.
+        function logout() {
+            localStorage.removeItem('logado');
+            // Only redirect if not in the Canvas environment.
+            if (typeof __app_id === 'undefined') {
+                window.location.href = 'login.html';
+            } else {
+                console.log("Running in Canvas environment, logout simulated.");
+                // Optionally clear other session data or show a message for Canvas.
+            }
+        }
+
+        // --- FUNCIONALIDADE DE DROPDOWN MENUS ---
+        // Função para alternar a visibilidade de um menu dropdown específico.
+        function toggleDropdown(id, event) {
+            // Previne o comportamento padrão do clique (ex: navegação de links)
+            // e impede que o evento se propague para elementos pai (evitando o fechamento imediato pelo listener global).
+            event.preventDefault();
+            event.stopPropagation();
+
+            const menu = document.getElementById(id);
+            // Verifica se o menu está visível (display 'flex' indica visível).
+            const isVisible = menu.style.display === 'flex';
+
+            // Fecha *todos* os outros dropdowns que possam estar abertos,
+            // garantindo que apenas um dropdown esteja ativo por vez.
+            document.querySelectorAll('.dropdown-content').forEach(m => {
+                if (m !== menu) { // Não fecha o menu que está sendo clicado.
+                    m.style.display = 'none';
+                    // Atualiza o atributo ARIA para refletir o estado fechado, importante para acessibilidade.
+                    if (m.previousElementSibling) {
+                        m.previousElementSibling.setAttribute('aria-expanded', 'false');
+                        m.classList.remove('animate-fade-in'); // Remove a classe de animação para o próximo show
+                    }
+                }
+            });
+
+            // Alterna a visibilidade do dropdown alvo e aplica/remove a animação.
+            if (!isVisible) {
+                menu.style.display = 'flex'; // Opens the menu as a flexible container.
+                menu.style.flexDirection = 'column'; // Ensures items align vertically.
+                menu.classList.add('animate-fade-in'); // Adds the animation class for smooth entry.
+                // Updates the ARIA attribute to 'true', indicating the menu is open.
+                if (menu.previousElementSibling) {
+                    menu.previousElementSibling.setAttribute('aria-expanded', 'true');
+                }
+            } else {
+                // When closing, we can add a small exit animation if desired,
+                // but for simplicity, we just hide it.
+                menu.style.display = 'none'; // Closes the menu.
+                menu.classList.remove('animate-fade-in'); // Removes the animation class.
+                // Updates the ARIA attribute to 'false'.
+                if (menu.previousElementSibling) {
+                    menu.previousElementSibling.setAttribute('aria-expanded', 'false');
+                }
+            }
+        }
+
+        // Global listener to close any dropdown when the user clicks outside any dropdown.
+        document.addEventListener('click', (event) => {
+            // Checks if the click occurred inside a dropdown (either the button or the content).
+            // If the click was not inside an element with the 'dropdown' or 'dropdown-content' class,
+            // then close all open dropdowns.
+            const isClickInsideDropdown = event.target.closest('.dropdown');
+            if (!isClickInsideDropdown) {
+                document.querySelectorAll('.dropdown-content').forEach(menu => {
+                    if (menu.style.display === 'flex') { // Only close if visible.
+                        menu.style.display = 'none'; // Hides the menu.
+                        menu.classList.remove('animate-fade-in'); // Removes the animation class.
+                        // Updates the ARIA attribute to 'false'.
+                        if (menu.previousElementSibling) {
+                            menu.previousElementSibling.setAttribute('aria-expanded', 'false');
+                        }
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html>

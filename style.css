@@ -1,0 +1,342 @@
+/* --- Início do seu style.css --- */
+
+/* Fonte e base */
+body {
+  font-family: 'Quicksand', sans-serif;
+  margin: 0;
+  padding: 0;
+  background-color: #f0f4f8; /* Cor de fundo suave */
+  color: #333;
+  line-height: 1.6;
+}
+
+/* Topo do sistema - Cabeçalho Fixo */
+.top-menu {
+  background: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 30px; /* Padding ajustado */
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08); /* Sombra mais pronunciada */
+  position: sticky;
+  top: 0;
+  z-index: 1000; /* Garante que o menu fique acima de outros elementos */
+}
+
+/* Logo */
+.logo {
+  font-size: 26px; /* Tamanho da fonte ajustado */
+  font-weight: 700; /* Peso da fonte mais forte */
+  color: #0077cc; /* Azul vibrante */
+  text-transform: uppercase;
+}
+
+.logo span {
+  font-weight: 400; /* Peso da fonte normal para "FROTAS" */
+  color: #777;
+  font-size: 16px; /* Tamanho da fonte ajustado */
+  display: block;
+  letter-spacing: 0.5px;
+}
+
+/* Menu de Navegação */
+.menu {
+  display: flex; /* ESSENCIAL: Faz os itens do menu ficarem em linha */
+  gap: 20px; /* Espaço entre os itens do menu */
+  align-items: center;
+}
+
+.menu a, .dropbtn {
+  text-decoration: none;
+  color: #0077cc;
+  font-weight: 600;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 10px 18px; /* Padding maior para botões mais clicáveis */
+  border-radius: 8px; /* Borda mais arredondada */
+  transition: background-color 0.3s ease, color 0.3s ease, transform 0.2s ease; /* Transições suaves */
+  font-size: 16px;
+}
+
+.menu a:hover, .dropbtn:hover {
+  background-color: #0077cc;
+  color: #ffffff;
+  transform: translateY(-2px); /* Efeito de leve elevação no hover */
+}
+
+/* Dropdown Container */
+.dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+.dropdown-content {
+  display: none;
+  position: absolute;
+  background-color: #0077cc;
+  color: white;
+  padding: 15px 0;
+  top: 50px;
+  left: 0;
+  z-index: 1;
+  border-radius: 8px;
+  min-width: 220px;
+  box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+  text-align: left;
+  opacity: 0;
+  transform: translateY(10px);
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.dropdown-content.show {
+  display: block;
+  opacity: 1;
+  transform: translateY(0);
+}
+
+
+/* Para alinhar o dropdown de Relatórios à direita */
+#relatorios-menu {
+  right: 0;
+  left: auto; /* Anula o left:0; para este ID específico */
+}
+
+/* Estado 'show' do Dropdown (ativado pelo JS) */
+.dropdown-content.show {
+  display: block; /* MOSTRA QUANDO ATIVO */
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Multicoluna em relatórios (se aplicável) */
+.multi-column {
+  display: flex;
+  min-width: 650px; /* Largura para duas colunas - APENAS para relatórios */
+  gap: 30px;
+  padding: 20px; /* Padding interno para colunas */
+}
+
+/* Colunas do Dropdown */
+.column {
+  display: flex;
+  flex-direction: column;
+}
+
+.column strong {
+  margin-bottom: 12px;
+  color: #ffffff; /* Texto em branco */
+  font-size: 15px;
+  border-bottom: 1px solid rgba(255,255,255,0.3); /* Linha divisória */
+  padding-bottom: 8px;
+}
+
+/* Estilo para links dentro de dropdowns (seja multi-column ou não) */
+.dropdown-content a {
+  color: #ffffff; /* Garante que a cor do texto seja branca */
+  text-decoration: none;
+  font-size: 14px;
+  padding: 8px 15px; /* Padding para os links do dropdown */
+  display: block; /* Cada link ocupa sua própria linha */
+  transition: background-color 0.2s, color 0.2s;
+  border-radius: 4px;
+}
+
+.dropdown-content a:hover {
+  background-color: rgba(255,255,255,0.15); /* Fundo leve no hover */
+  color: #fff;
+}
+
+/* Conteúdo Principal */
+main {
+  padding: 40px 30px;
+  max-width: 1200px; /* Limita a largura do conteúdo para melhor leitura */
+  margin: 0 auto; /* Centraliza o conteúdo */
+}
+
+h1 {
+  font-size: 32px;
+  margin-bottom: 30px;
+  color: #0077cc;
+  text-align: center;
+  font-weight: 700;
+}
+
+/* Layout do Conteúdo (Gráfico e Resumo) */
+.content {
+  display: flex;
+  gap: 30px;
+  flex-wrap: wrap; /* Permite que os itens quebrem a linha */
+  align-items: flex-start; /* Alinha o topo dos elementos */
+}
+
+/* Gráfico Fictício */
+.grafico {
+  flex: 2;
+  min-width: 400px; /* Largura mínima para o gráfico */
+  background: #ffffff;
+  padding: 30px;
+  border-radius: 12px;
+  text-align: center;
+  color: #999;
+  box-shadow: 0 6px 15px rgba(0,0,0,0.08); /* Sombra suave */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 300px; /* Altura mínima maior para o gráfico */
+  font-size: 1.2em;
+}
+
+/* Resumo Lateral (Cards) */
+.resumo {
+  flex: 1;
+  min-width: 280px; /* Largura mínima para os cards */
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* Estilo dos Cards */
+.card {
+  border-radius: 12px; /* Borda mais arredondada */
+  padding: 25px; /* Mais padding */
+  color: white; /* Garante que o texto padrão dos cards seja branco */
+  font-weight: bold;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1); /* Sombra sutil */
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.card:hover {
+  transform: translateY(-8px); /* Elevação mais notável no hover */
+  box-shadow: 0 10px 20px rgba(0,0,0,0.15); /* Sombra mais densa no hover */
+}
+
+.card h2 {
+  margin-top: 0;
+  margin-bottom: 12px;
+  font-size: 1.5em; /* Tamanho do título do card */
+  font-weight: 700;
+}
+
+.card p {
+  margin: 0;
+  font-size: 2em; /* Tamanho do valor do card */
+  font-weight: 700;
+  letter-spacing: -0.5px;
+}
+
+/* Cores dos Cards */
+.verde {
+  background-color: #2ecc71; /* Verde esmeralda */
+}
+
+.amarelo {
+  background-color: #f1c40f; /* Amarelo ensolarado */
+}
+
+.laranja {
+  background-color: #e67e22; /* Laranja abóbora */
+}
+
+.azul {
+  background-color: #3498db; /* Azul celeste */
+}
+
+.amarelo-claro { /* Cor para o card de Multas - um laranja mais suave */
+  background-color: #f39c12;
+  color: #333; /* ***** CORREÇÃO AQUI: Cor do texto para o card de multas (amarelo-claro) ****** */
+}
+
+/* Responsividade para telas menores */
+@media (max-width: 992px) {
+  .top-menu {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 15px;
+  }
+
+  .menu {
+    margin-top: 15px;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+    width: 100%; /* Ocupa a largura total */
+  }
+
+  .menu a, .dropbtn {
+    width: 100%;
+    text-align: left;
+    padding: 12px 20px;
+    box-sizing: border-box; /* Inclui padding na largura */
+  }
+
+  .dropdown {
+    width: 100%; /* Dropdown também ocupa a largura total */
+  }
+
+  .dropdown-content {
+    position: static; /* Sai do posicionamento absoluto em mobile */
+    min-width: unset;
+    width: 100%;
+    box-shadow: none;
+    background-color: #a4c7e0; /* Um tom um pouco diferente para o dropdown em mobile */
+    border-radius: 0; /* Remove borda arredondada em mobile */
+    padding: 10px 0;
+    opacity: 1; /* Garante que não haja animação de opacidade em mobile */
+    transform: none; /* Remove animação de slide em mobile */
+  }
+
+  .multi-column {
+    flex-direction: column;
+    gap: 15px;
+    min-width: unset;
+    padding: 0; /* Remove padding extra para colunas em mobile */
+  }
+
+  .column strong {
+    padding-left: 20px; /* Padding para alinhar com os links */
+  }
+
+  .column a {
+    padding-left: 30px; /* Padding para os links em mobile */
+  }
+
+  h1 {
+    font-size: 28px;
+  }
+
+  .content {
+    flex-direction: column;
+    align-items: center; /* Centraliza itens em coluna */
+  }
+
+  .grafico, .resumo {
+    flex: none;
+    width: 100%;
+    min-width: unset; /* Remove largura mínima fixa */
+  }
+}
+
+/* Media query para telas muito pequenas */
+@media (max-width: 576px) {
+  .logo {
+    font-size: 22px;
+  }
+  .logo span {
+    font-size: 13px;
+  }
+  main {
+    padding: 20px 15px;
+  }
+  h1 {
+    font-size: 24px;
+  }
+  .card h2 {
+    font-size: 1.2em;
+  }
+  .card p {
+    font-size: 1.8em;
+  }
+}
+
+/* --- Fim do seu style.css --- */

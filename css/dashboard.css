@@ -1,0 +1,200 @@
+/* Estilos globais e tipografia */
+body {
+    font-family: 'Poppins', sans-serif;
+    background-color: #f0f4f8; /* Light background for a clean look */
+    color: #2c3e50; /* Darker text for readability */
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased; /* Smoother font rendering */
+    -moz-osx-font-smoothing: grayscale;
+}
+
+/* Animações de fade-in para dropdowns e outros elementos dinâmicos */
+@keyframes fadeIn {
+    from { opacity: 0; transform: scaleY(0.9) translateY(-10px); }
+    to { opacity: 1; transform: scaleY(1) translateY(0); }
+}
+.animate-fade-in {
+    animation: fadeIn 0.3s ease-out forwards;
+    transform-origin: top;
+}
+
+/* Animação de fade-out (para modais, por exemplo) */
+@keyframes fadeOut {
+    from { opacity: 1; }
+    to { opacity: 0; }
+}
+.animate-fade-out {
+    animation: fadeOut 0.3s ease-out forwards;
+}
+
+/* Estilo da barra de rolagem personalizada */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+::-webkit-scrollbar-thumb {
+    background-color: rgba(11, 61, 145, 0.6); /* Semi-transparent primary blue */
+    border-radius: 4px;
+}
+::-webkit-scrollbar-track {
+    background: rgba(11, 61, 145, 0.1); /* Lighter track */
+}
+
+/* Estilos para o cabeçalho e navegação */
+header {
+    /* Tailwind classes já aplicadas no HTML: bg-blue-800 text-white p-4 flex flex-col md:flex-row items-center justify-between shadow-lg sticky top-0 z-50 rounded-b-xl */
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); /* Mais forte que shadow-lg */
+}
+
+nav a, nav button.dropbtn {
+    /* Tailwind classes já aplicadas no HTML. Adicionando foco e hover mais definidos */
+    transition: all 0.3s ease;
+}
+
+nav a:hover, nav button.dropbtn:hover {
+    color: #fcd34d; /* yellow-300 */
+    transform: translateY(-2px);
+}
+
+nav a.active, nav button.dropbtn.active {
+    border-bottom: 4px solid #fcd34d; /* yellow-300 */
+    padding-bottom: 8px; /* Ajuste para compensar a borda */
+}
+
+.dropdown-content {
+    /* Tailwind classes já aplicadas no HTML: absolute top-12 left-0 bg-white rounded-xl shadow-xl min-w-[200px] hidden flex-col z-[9999] overflow-hidden */
+    border: 1px solid #e5e7eb; /* gray-200 */
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+}
+
+.dropdown-content a {
+    /* Tailwind classes já aplicadas no HTML: px-6 py-3 text-gray-700 font-medium hover:bg-blue-50 hover:text-blue-800 transition-colors duration-200 whitespace-nowrap */
+    border-radius: 8px; /* Cantos arredondados para os itens do dropdown */
+    margin: 4px;
+}
+
+/* Estilos para a barra lateral de filtros (aside) */
+aside {
+    /* Tailwind classes já aplicadas no HTML: md:w-72 p-6 bg-white border-r border-gray-200 overflow-y-auto shadow-md rounded-br-2xl md:rounded-tr-none md:rounded-br-none md:rounded-bl-2xl */
+    box-shadow: 4px 0 10px -3px rgba(0, 0, 0, 0.1), 2px 0 4px -2px rgba(0, 0, 0, 0.05); /* Sombra mais pronunciada à direita */
+}
+
+aside h2 {
+    color: #1e3a8a; /* blue-900 */
+    font-weight: 800; /* font-extrabold */
+    margin-bottom: 1.5rem; /* mb-6 */
+    font-size: 1.875rem; /* text-3xl */
+}
+
+aside label {
+    color: #4b5563; /* gray-700 */
+    font-weight: 600; /* font-semibold */
+    font-size: 1rem; /* text-md */
+}
+
+aside select, aside input[type="date"] {
+    /* Tailwind classes já aplicadas no HTML: w-full p-3 rounded-lg border border-gray-300 shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 text-lg */
+    appearance: none; /* Remove estilo padrão do sistema operacional */
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='%234B5563'%3E%3Cpath fill-rule='evenodd' d='M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z' clip-rule='evenodd'%3E%3C/path%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 0.75rem center;
+    background-size: 1.5em 1.5em;
+    padding-right: 2.5rem; /* Espaço para o ícone */
+}
+
+aside button {
+    /* Tailwind classes já aplicadas no HTML: w-full bg-blue-600 text-white font-bold text-lg py-3 px-6 rounded-lg hover:bg-blue-700 transition-colors duration-300 shadow-md flex items-center justify-center */
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.06);
+}
+
+/* Estilos para a área principal (main) */
+main {
+    /* Tailwind classes já aplicadas no HTML: flex-1 p-6 md:p-8 space-y-8 overflow-y-auto */
+    padding-top: 2.5rem; /* Mais espaço no topo */
+    padding-bottom: 2.5rem; /* Mais espaço na base */
+}
+
+main h1 {
+    color: #1a202c; /* Cor mais escura para o título principal */
+    letter-spacing: 0.05em; /* Tracking wider */
+    font-size: 3.5rem; /* text-5xl */
+    line-height: 1.2;
+}
+
+main p {
+    color: #4a5568; /* gray-700 */
+    font-size: 1.125rem; /* text-lg */
+}
+
+#ultimaAtualizacao {
+    color: #4a5568; /* gray-600 */
+    font-size: 0.95rem; /* text-md */
+}
+
+/* Estilos para os Cards de KPI */
+section.grid > div {
+    /* Tailwind classes já aplicadas no HTML: p-6 rounded-2xl bg-gradient-to-br from-blue-600 to-blue-800 text-white shadow-xl flex flex-col justify-between transform hover:scale-105 transition-transform duration-300 ease-in-out */
+    border: 1px solid rgba(255, 255, 255, 0.1); /* Borda sutil para cards claros */
+    box-shadow: 0 15px 30px -5px rgba(0, 0, 0, 0.2), 0 8px 16px -8px rgba(0, 0, 0, 0.12); /* Sombra mais profunda */
+}
+
+section.grid > div h2 {
+    font-size: 3rem; /* text-4xl */
+    line-height: 1;
+    margin-bottom: 0.5rem;
+    font-weight: 900; /* Mais forte */
+    letter-spacing: -0.02em; /* Espaçamento mais apertado */
+}
+
+section.grid > div p {
+    font-size: 1rem; /* Um pouco maior */
+    opacity: 0.9;
+    font-weight: 500; /* Um pouco mais encorpado */
+}
+
+/* Estilos para os botões de atualização */
+.text-right button {
+    /* Tailwind classes já aplicadas no HTML: bg-blue-800 text-white font-bold text-lg py-3 px-8 rounded-lg hover:bg-blue-700 transition-colors duration-300 shadow-md */
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.06);
+}
+
+/* Estilos para as seções de gráficos */
+section.grid.gap-8 > div {
+    /* Tailwind classes já aplicadas no HTML: bg-white p-6 rounded-3xl shadow-lg border border-gray-100 flex flex-col items-center justify-center */
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+
+section.grid.gap-8 > div h3 {
+    color: #1e3a8a; /* blue-900 */
+    font-weight: 800; /* font-extrabold */
+    font-size: 1.875rem; /* text-3xl */
+    margin-bottom: 1.5rem; /* mb-6 */
+}
+
+/* Estilo para o select dentro da seção de Análise de Custos */
+#personalizado {
+    /* Tailwind classes já aplicadas no HTML: p-3 border border-gray-300 rounded-lg text-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 */
+    appearance: none; /* Remove estilo padrão do sistema operacional */
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='%234B5563'%3E%3Cpath fill-rule='evenodd' d='M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z' clip-rule='evenodd'%3E%3C/path%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 0.75rem center;
+    background-size: 1.5em 1.5em;
+    padding-right: 2.5rem; /* Espaço para o ícone */
+}
+
+/* Responsividade básica (Tailwind já faz muito, mas para ajustes finos) */
+@media (max-width: 768px) {
+    main h1 {
+        font-size: 2.5rem; /* Reduz o tamanho do título em telas menores */
+    }
+    aside {
+        width: 100%; /* Sidebar ocupa toda a largura em telas pequenas */
+        border-right: none;
+        border-bottom: 1px solid #e2e8f0; /* gray-200 */
+        border-radius: 0 0 1.5rem 1.5rem; /* rounded-b-3xl */
+        box-shadow: 0 4px 10px -3px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.05); /* Sombra na parte inferior */
+    }
+}
